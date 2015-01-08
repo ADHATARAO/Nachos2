@@ -40,7 +40,7 @@ char SynchConsole::SynchGetChar()
 	return ch;
 }
 
-/*void SynchConsole::SynchPutString(const char s[])
+void SynchConsole::SynchPutString(const char s[])
 {
 // ...
 }
@@ -48,6 +48,6 @@ char SynchConsole::SynchGetChar()
 void SynchConsole::SynchGetString(char *s, int n)
 {
 // ...
-}*/
+}
 
 #endif // CHANGED
