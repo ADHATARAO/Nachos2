@@ -24,6 +24,8 @@
 					// execution stack, for detecting 
 					// stack overflows
 
+static int counter = 0;
+
 //----------------------------------------------------------------------
 // Thread::Thread
 //      Initialize a thread control block, so that we can then call
@@ -193,23 +195,34 @@ Thread::Finish ()
 //      Similar to Thread::Sleep(), but a little different.
 //----------------------------------------------------------------------
 
-void
-Thread::Yield ()
-{
-    Thread *nextThread;
-    IntStatus oldLevel = interrupt->SetLevel (IntOff);
 
-    ASSERT (this == currentThread);
+void Thread::Yield() {
+//	int counter = 0;
 
-    DEBUG ('t', "Yielding thread \"%s\"\n", getName ());
+	printf("%d \n", counter);
+	counter++;
 
-    nextThread = scheduler->FindNextToRun ();
-    if (nextThread != NULL)
-      {
-	  scheduler->ReadyToRun (this);
-	  scheduler->Run (nextThread);
-      }
-    (void) interrupt->SetLevel (oldLevel);
+	if (counter % 2 == 0) {
+
+		Thread *nextThread;
+		IntStatus oldLevel = interrupt->SetLevel(IntOff);
+
+		ASSERT(this == currentThread);
+
+		DEBUG('t', "Yielding thread \"%s\"\n", getName());
+
+		nextThread = scheduler->FindNextToRun();
+
+		if (nextThread != NULL) {
+			scheduler->ReadyToRun(this);
+			scheduler->Run(nextThread);
+
+		}
+		(void) interrupt->SetLevel(oldLevel);
+
+
+	}
+
 }
 
 //----------------------------------------------------------------------

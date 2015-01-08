@@ -155,6 +155,7 @@ Initialize (int argc, char **argv)
     interrupt->Enable ();
     CallOnUserAbort (Cleanup);	// if user hits ctl-C
 
+// for the MIPS processor
 #ifdef USER_PROGRAM
     machine = new Machine (debugUserProg);	// this must come first
 #endif

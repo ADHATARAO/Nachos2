@@ -15,7 +15,13 @@
 int
 main ()
 {
-    Halt ();
+#ifdef CHANGED
+  int i ;
+
+  for (i = 0; i < 5; i++) ;
+#endif
+
+  Halt ();
 
     /* not reached */
     return 0;
