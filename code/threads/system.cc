@@ -36,6 +36,13 @@ PostOffice *postOffice;
 #endif
 
 
+/*For SynchConsole*/
+#ifdef CHANGED
+#ifdef USER_PROGRAM
+SynchConsole *synchConsole;
+#endif
+#endif
+
 // External definition, to allow us to take a pointer to this function
 extern void Cleanup ();
 
@@ -171,6 +178,13 @@ Initialize (int argc, char **argv)
 #ifdef NETWORK
     postOffice = new PostOffice (netname, rely, 10);
 #endif
+
+// To initialized for synchConsole
+#ifdef CHANGED
+    synchConsole = new SynchConsole (0, 0);////
+#endif
+
+
 }
 
 //----------------------------------------------------------------------
@@ -195,6 +209,11 @@ Cleanup ()
 
 #ifdef FILESYS
     delete synchDisk;
+#endif
+
+// To clean for synchConsole
+#ifdef CHANGED
+    delete synchConsole;
 #endif
 
     delete timer;
