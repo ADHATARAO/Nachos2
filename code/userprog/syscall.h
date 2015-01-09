@@ -68,7 +68,7 @@ SpaceId Exec (char *name);
 
 /* Only return once the the user program "id" has finished.  
  * Return the exit status.
- */
+ *///////////////
 int Join (SpaceId id);
 
 
