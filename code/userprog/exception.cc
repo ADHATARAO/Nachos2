@@ -56,23 +56,6 @@ void copyStringFromMachine(int from, char *to, unsigned size)
 	synchConsole->SynchPutString(to);
 }
 
-/*char * ReadStringFromMachine(int from, unsigned max_size) {
-   On copie octet par octet, de la mémoire user vers la mémoire noyau (buffer)
-   * en faisant attention à bien convertir explicitement en char
-
-  int byte;
-  unsigned int i;
-  char * buffer = new char[max_size];
-  for(i = 0; i < max_size-1; i++) {
-    machine->ReadMem(from+i,1, &byte);
-    if((char)byte=='\0')
-      break;
-    buffer[i] = (char) byte;
-  }
-  buffer[i] = '\0';
-  return buffer;
-}*/
-
 //----------------------------------------------------------------------
 // ExceptionHandler
 //      Entry point into the Nachos kernel.  Called when a user program
