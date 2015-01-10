@@ -113,6 +113,10 @@ ExceptionHandler(ExceptionType which)
 				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
 				break;
 			}
+			case SC_GetChar: {
+				machine->WriteRegister(2,(int) synchConsole->SynchGetChar());
+				break;
+			}
 			default: {
 				printf("Unexpected user mode exception %d %d\n", which, type);
 				ASSERT(FALSE);
