@@ -12,5 +12,6 @@ void print(char c, int n)
 int main()
 {
 	print('a', 10);
-	Halt();
+	//Halt();
+	return (0);
 }

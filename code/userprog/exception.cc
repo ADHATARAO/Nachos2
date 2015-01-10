@@ -55,7 +55,15 @@ void copyStringFromMachine(int from, char *to, unsigned size)
 
 	synchConsole->SynchPutString(to);
 }
-
+void WriteStringToMachine(char * string, int to, unsigned max_size) {
+/* copy byte by byte with a casting  */
+	char * bytes = (char *)(&machine->mainMemory[to]);
+	for(unsigned int i = 0; i < max_size-1; i++) {
+			bytes[i] = string[i];
+			if(string[i]=='\0')
+				break;
+	}
+}
 //----------------------------------------------------------------------
 // ExceptionHandler
 //      Entry point into the Nachos kernel.  Called when a user program
@@ -113,6 +121,23 @@ ExceptionHandler(ExceptionType which)
 				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
 				break;
 			}
+			case SC_GetChar: {
+				machine->WriteRegister(2,(int) synchConsole->SynchGetChar());
+				break;
+			}
+			case SC_GetString: {
+			// le premier argument est une adresse (char *)
+			int to = machine->ReadRegister(4);
+			// le second est un int >> la taille
+			int size = machine->ReadRegister(5);
+			// On donne pas acceder à la mémoire directement,on ecrit  dans
+			// un buffer..
+			char buffer[MAX_STRING_SIZE];
+			synchConsole->SynchGetString(buffer, size);
+			WriteStringToMachine(buffer, to, size);
+			break;
+			}
+
 			default: {
 				printf("Unexpected user mode exception %d %d\n", which, type);
 				ASSERT(FALSE);

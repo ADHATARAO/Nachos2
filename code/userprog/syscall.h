@@ -32,6 +32,8 @@
 
 #define SC_PutChar	11 // adding SC_PutChar syscall
 #define SC_PutString	12 // adding SC_PutString syscall
+#define SC_GetChar  13
+#define SC_GetString 14
 
 
 #ifdef IN_USER_MODE
@@ -137,6 +139,10 @@ void PutChar(char c);
 
 //PutString syscall function
 void PutString(char *s);
+
+char GetChar();
+
+void GetString(char *s, int n);
 
 #endif // IN_USER_MODE
 
