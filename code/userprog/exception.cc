@@ -130,7 +130,7 @@ ExceptionHandler(ExceptionType which)
 				machine->WriteRegister(2,(int) synchConsole->SynchGetChar());
 				break;
 			}
-			case SC_SynchGetString: {
+			case SC_GetString: {
 				char *buffer = new char[MAX_STRING_SIZE];
 				synchConsole->SynchGetString(buffer, machine->ReadRegister(5));
 				writeStringToMachine(buffer, machine->ReadRegister(4), machine->ReadRegister(5));
