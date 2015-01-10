@@ -56,6 +56,19 @@ void copyStringFromMachine(int from, char *to, unsigned size)
 	synchConsole->SynchPutString(to);
 }
 
+
+void writeStringToMachine(char * string, int to, unsigned size)
+{
+	int i = 0;
+
+	for (i = 0; i < (int)size; i++)
+	{
+		machine->WriteMem(to + i, 1, string[i]);
+		if (string[i] == '\0')
+			break;
+	}
+}
+
 //----------------------------------------------------------------------
 // ExceptionHandler
 //      Entry point into the Nachos kernel.  Called when a user program
@@ -115,6 +128,12 @@ ExceptionHandler(ExceptionType which)
 			}
 			case SC_GetChar: {
 				machine->WriteRegister(2,(int) synchConsole->SynchGetChar());
+				break;
+			}
+			case SC_SynchGetString: {
+				char *buffer = new char[MAX_STRING_SIZE];
+				synchConsole->SynchGetString(buffer, machine->ReadRegister(5));
+				writeStringToMachine(buffer, machine->ReadRegister(4), machine->ReadRegister(5));
 				break;
 			}
 			default: {
