@@ -42,36 +42,19 @@ UpdatePC ()
 
 void copyStringFromMachine(int from, char *to, unsigned size)
 {
-	int byte;
+	int value;
 	unsigned int i;
 
 	for (i = 0; i < size - 1; i++) {
-		machine->ReadMem(from + i, 1, &byte);
-		if ((char) byte == '\0')
+		machine->ReadMem(from + i, 1, &value);
+		if ((char) value == '\0')
 			break;
-		to[i] = (char) byte;
+		to[i] = (char) value;
 	}
 	to[i] = '\0';
 
 	synchConsole->SynchPutString(to);
 }
-
-/*char * ReadStringFromMachine(int from, unsigned max_size) {
-   On copie octet par octet, de la mémoire user vers la mémoire noyau (buffer)
-   * en faisant attention à bien convertir explicitement en char
-
-  int byte;
-  unsigned int i;
-  char * buffer = new char[max_size];
-  for(i = 0; i < max_size-1; i++) {
-    machine->ReadMem(from+i,1, &byte);
-    if((char)byte=='\0')
-      break;
-    buffer[i] = (char) byte;
-  }
-  buffer[i] = '\0';
-  return buffer;
-}*/
 
 //----------------------------------------------------------------------
 // ExceptionHandler
