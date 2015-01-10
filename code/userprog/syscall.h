@@ -30,7 +30,8 @@
 #define SC_Fork		9
 #define SC_Yield	10
 
-#define SC_PutChar	11 // adding SC_ PutChar syscall
+#define SC_PutChar	11 // adding SC_PutChar syscall
+#define SC_PutString	12 // adding SC_PutString syscall
 
 
 #ifdef IN_USER_MODE
@@ -133,6 +134,9 @@ void Yield ();
 
 //Putchar syscall function
 void PutChar(char c);
+
+//PutString syscall function
+void PutString(char *s);
 
 #endif // IN_USER_MODE
 

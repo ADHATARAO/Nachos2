@@ -40,6 +40,38 @@ UpdatePC ()
     machine->WriteRegister (NextPCReg, pc);
 }
 
+void copyStringFromMachine(int from, char *to, unsigned size)
+{
+	int byte;
+	unsigned int i;
+
+	for (i = 0; i < size - 1; i++) {
+		machine->ReadMem(from + i, 1, &byte);
+		if ((char) byte == '\0')
+			break;
+		to[i] = (char) byte;
+	}
+	to[i] = '\0';
+
+	synchConsole->SynchPutString(to);
+}
+
+/*char * ReadStringFromMachine(int from, unsigned max_size) {
+   On copie octet par octet, de la mémoire user vers la mémoire noyau (buffer)
+   * en faisant attention à bien convertir explicitement en char
+
+  int byte;
+  unsigned int i;
+  char * buffer = new char[max_size];
+  for(i = 0; i < max_size-1; i++) {
+    machine->ReadMem(from+i,1, &byte);
+    if((char)byte=='\0')
+      break;
+    buffer[i] = (char) byte;
+  }
+  buffer[i] = '\0';
+  return buffer;
+}*/
 
 //----------------------------------------------------------------------
 // ExceptionHandler
@@ -91,7 +123,11 @@ ExceptionHandler(ExceptionType which)
 				int charint = machine->ReadRegister(4); //The compiler puts the first argument char c in the r4 register
 				char ch = (char) charint;
 				synchConsole->SynchPutChar(ch);
-//				printf("\n  Default print function character >> %c",ch);
+				break;
+			}
+			case SC_PutString: {
+				char *buffer = new char[MAX_STRING_SIZE];
+				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
 				break;
 			}
 			default: {
