@@ -44,16 +44,21 @@ void copyStringFromMachine(int from, char *to, unsigned size)
 {
 	int byte;
 	unsigned int i;
+	int offset= 0;
 
-	for (i = 0; i < size - 1; i++) {
-		machine->ReadMem(from + i, 1, &byte);
-		if ((char) byte == '\0')
-			break;
-		to[i] = (char) byte;
-	}
-	to[i] = '\0';
+	do {
+		for (i = 0; i < size - 1; i++) {
+			machine->ReadMem(from + offset + i, 1, &byte);
 
-	synchConsole->SynchPutString(to);
+			if ((char) byte == '\0')
+				break;
+			to[i] = (char) byte;
+		}
+
+		offset = offset + i;
+		to[i] = '\0';
+		synchConsole->SynchPutString(to);
+	} while ((char) byte != '\0');
 }
 
 
@@ -115,6 +120,11 @@ ExceptionHandler(ExceptionType which)
 				interrupt->Halt();
 				break;
 			}
+			case SC_Exit: {
+				DEBUG('a', "Program exit.\n");
+				Exit(0);
+				break;
+			}
 			case SC_PutChar: {
 				int charint = machine->ReadRegister(4); //The compiler puts the first argument char c in the r4 register
 				char ch = (char) charint;
@@ -124,6 +134,7 @@ ExceptionHandler(ExceptionType which)
 			case SC_PutString: {
 				char *buffer = new char[MAX_STRING_SIZE];
 				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
+				delete [] buffer;
 				break;
 			}
 			case SC_GetChar: {
@@ -134,6 +145,7 @@ ExceptionHandler(ExceptionType which)
 				char *buffer = new char[MAX_STRING_SIZE];
 				synchConsole->SynchGetString(buffer, machine->ReadRegister(5));
 				writeStringToMachine(buffer, machine->ReadRegister(4), machine->ReadRegister(5));
+				delete [] buffer;
 				break;
 			}
 			default: {
