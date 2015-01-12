@@ -35,6 +35,9 @@
 #define SC_GetChar	13
 #define SC_GetString	14
 
+#define SC_PutInt	15 // adding SC_PutString syscall
+#define SC_GetInt	16
+
 #ifdef IN_USER_MODE
 
 // LB: This part is read only on compiling the test/*.c files.
@@ -139,6 +142,9 @@ void PutString(char *s); //PutString syscall function
 
 char GetChar();
 void GetString(char *s, int n);
+
+void PutInt(int value);
+void GetInt(int *n);
 
 #endif // IN_USER_MODE
 

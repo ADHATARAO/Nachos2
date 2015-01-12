@@ -2,5 +2,6 @@
 
 int main() {
     PutString("this is all the testing for put string\n");
-    Halt();
+//    Halt();
+    return 0;
 }

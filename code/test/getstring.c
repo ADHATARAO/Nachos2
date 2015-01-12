@@ -2,9 +2,10 @@
 
 int main() {
 
-	char buffer[100];
-	GetString(buffer, 100);
+	char buffer[17];
+	GetString(buffer, 17);
 	PutString("\n You typed : ");
 	PutString(buffer);
+	PutString("\n");
 	Halt();
 }
