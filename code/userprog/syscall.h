@@ -32,7 +32,8 @@
 
 #define SC_PutChar	11 // adding SC_PutChar syscall
 #define SC_PutString	12 // adding SC_PutString syscall
-
+#define SC_GetChar	13
+#define SC_GetString	14
 
 #ifdef IN_USER_MODE
 
@@ -132,11 +133,12 @@ void Fork (void (*func) ());
  */
 void Yield ();
 
-//Putchar syscall function
-void PutChar(char c);
 
-//PutString syscall function
-void PutString(char *s);
+void PutChar(char c); //Putchar syscall function
+void PutString(char *s); //PutString syscall function
+
+char GetChar();
+void GetString(char *s, int n);
 
 #endif // IN_USER_MODE
 

@@ -51,7 +51,17 @@ void SynchConsole::SynchPutString(const char s[])
 
 void SynchConsole::SynchGetString(char *s, int n)
 {
-// ...
+	int i;
+	char c;
+	for (i=0; i<n-1; i++) {
+		c = this->SynchGetChar();
+
+		if(c == EOF)
+			break;
+		else
+			s[i] = c;
+	}
+	s[i] = '\0';
 }
 
 #endif // CHANGED

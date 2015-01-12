@@ -56,22 +56,18 @@ void copyStringFromMachine(int from, char *to, unsigned size)
 	synchConsole->SynchPutString(to);
 }
 
-/*char * ReadStringFromMachine(int from, unsigned max_size) {
-   On copie octet par octet, de la mémoire user vers la mémoire noyau (buffer)
-   * en faisant attention à bien convertir explicitement en char
 
-  int byte;
-  unsigned int i;
-  char * buffer = new char[max_size];
-  for(i = 0; i < max_size-1; i++) {
-    machine->ReadMem(from+i,1, &byte);
-    if((char)byte=='\0')
-      break;
-    buffer[i] = (char) byte;
-  }
-  buffer[i] = '\0';
-  return buffer;
-}*/
+void writeStringToMachine(char * string, int to, unsigned size)
+{
+	int i = 0;
+
+	for (i = 0; i < (int)size; i++)
+	{
+		machine->WriteMem(to + i, 1, string[i]);
+		if (string[i] == '\0')
+			break;
+	}
+}
 
 //----------------------------------------------------------------------
 // ExceptionHandler
@@ -128,6 +124,16 @@ ExceptionHandler(ExceptionType which)
 			case SC_PutString: {
 				char *buffer = new char[MAX_STRING_SIZE];
 				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
+				break;
+			}
+			case SC_GetChar: {
+				machine->WriteRegister(2,(int) synchConsole->SynchGetChar());
+				break;
+			}
+			case SC_GetString: {
+				char *buffer = new char[MAX_STRING_SIZE];
+				synchConsole->SynchGetString(buffer, machine->ReadRegister(5));
+				writeStringToMachine(buffer, machine->ReadRegister(4), machine->ReadRegister(5));
 				break;
 			}
 			default: {
