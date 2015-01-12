@@ -49,19 +49,21 @@ void SynchConsole::SynchPutString(const char s[])
 	}
 }
 
-void SynchConsole::SynchGetString(char *buffer, int n) {
+
+void SynchConsole::SynchGetString(char *s, int n)
+{
 
 	int i;
 	char c;
 	for (i=0; i<n-1; i++) {
 		c = this->SynchGetChar();
-		// CTRL+D pour arrêter la saisie
+
 		if(c == EOF)
 			break;
 		else
-			buffer[i] = c;
+			s[i] = c;
 	}
-	buffer[i] = '\0';
+	s[i] = '\0';
 }
 
 #endif // CHANGED
