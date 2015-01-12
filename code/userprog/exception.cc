@@ -44,16 +44,21 @@ void copyStringFromMachine(int from, char *to, unsigned size)
 {
 	int byte;
 	unsigned int i;
+	int offset= 0;
 
-	for (i = 0; i < size - 1; i++) {
-		machine->ReadMem(from + i, 1, &byte);
-		if ((char) byte == '\0')
-			break;
-		to[i] = (char) byte;
-	}
-	to[i] = '\0';
+	do {
+		for (i = 0; i < size - 1; i++) {
+			machine->ReadMem(from + offset + i, 1, &byte);
 
-	synchConsole->SynchPutString(to);
+			if ((char) byte == '\0')
+				break;
+			to[i] = (char) byte;
+		}
+
+		offset = offset + i;
+		to[i] = '\0';
+		synchConsole->SynchPutString(to);
+	} while ((char) byte != '\0');
 }
 
 
@@ -64,8 +69,6 @@ void writeStringToMachine(char * string, int to, unsigned size)
 	for (i = 0; i < (int)size; i++)
 	{
 		machine->WriteMem(to + i, 1, string[i]);
-		if (string[i] == '\0')
-			break;
 	}
 }
 
@@ -115,25 +118,69 @@ ExceptionHandler(ExceptionType which)
 				interrupt->Halt();
 				break;
 			}
+			case SC_Exit: {
+				DEBUG('a', "Program exit.\n");
+				Exit(0);
+				break;
+			}
 			case SC_PutChar: {
+				DEBUG('m', "PutChar, system call handler. \n");
+
 				int charint = machine->ReadRegister(4); //The compiler puts the first argument char c in the r4 register
 				char ch = (char) charint;
 				synchConsole->SynchPutChar(ch);
 				break;
 			}
 			case SC_PutString: {
+				DEBUG('m', "PutString, system call handler.\n");
+
 				char *buffer = new char[MAX_STRING_SIZE];
 				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
+				delete [] buffer;
 				break;
 			}
 			case SC_GetChar: {
+				DEBUG('m', "GetChar, system call handler.\n");
+
 				machine->WriteRegister(2,(int) synchConsole->SynchGetChar());
 				break;
 			}
 			case SC_GetString: {
-				char *buffer = new char[MAX_STRING_SIZE];
-				synchConsole->SynchGetString(buffer, machine->ReadRegister(5));
-				writeStringToMachine(buffer, machine->ReadRegister(4), machine->ReadRegister(5));
+				DEBUG('m', "GetString, system call handler.\n");
+
+				char *buffer = new char[MAX_STRING_SIZE+1];
+				int reg5 = machine->ReadRegister(5), p = 0, size;
+				while (p < reg5 ) {
+					if (reg5  - p > MAX_STRING_SIZE+1)
+						size = MAX_STRING_SIZE+1;
+					else
+						size = reg5 - p;
+
+					synchConsole->SynchGetString(buffer, size);
+					writeStringToMachine(buffer, machine->ReadRegister(4)+p, strlen(buffer));
+					p+= strlen(buffer);
+
+					if (strlen(buffer) != MAX_STRING_SIZE)
+						break;
+				}
+				machine->WriteMem(machine->ReadRegister(4)+p+1, 1, '\0');
+				delete [] buffer;
+				break;
+			}
+			case SC_PutInt: {
+				DEBUG('m', "PutInt, system call handler.\n");
+
+				int value = machine->ReadRegister(4);
+				synchConsole->SynchPutInt(value);
+				break;
+			}
+			case SC_GetInt: {
+				DEBUG('m', "GetInt, system call handler.\n");
+
+				int num;
+				synchConsole->SynchGetInt(&num);
+				int adr = machine->ReadRegister(4);
+				machine->WriteMem(adr,4,num);
 				break;
 			}
 			default: {

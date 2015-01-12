@@ -56,7 +56,7 @@ extern PostOffice *postOffice;
 #ifdef CHANGED
 #include "synchconsole.h"
 extern SynchConsole *synchConsole;
-#define MAX_STRING_SIZE 1024
+#define MAX_STRING_SIZE 50
 #endif
 
 #endif // SYSTEM_H
