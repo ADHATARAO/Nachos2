@@ -25,6 +25,8 @@
 #include "system.h"
 #include "syscall.h"
 
+#include "userthread.h"
+
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
 // the user program immediately after the "syscall" instruction.
@@ -183,6 +185,30 @@ ExceptionHandler(ExceptionType which)
 				machine->WriteMem(adr,4,num);
 				break;
 			}
+			case SC_UserThreadCreate:{
+				DEBUG('t', "UserThreadCreate, initiated by user program.\n");
+
+				int f = machine->ReadRegister(4);
+				int arg = machine->ReadRegister(5);
+
+				int result = do_UserThreadCreate(f,arg);
+
+//				machine->WriteRegister(2,result);
+
+				printf("result %d>>>",result);
+
+				break;
+			}
+			case SC_UserThreadExit:
+			{
+				DEBUG('t', "UserThreadExit, initiated by user program.\n");
+//				do_UserThreadExit();
+
+				printf("in the UserThreadExit switch case \n");
+
+				break;
+			}
+
 			default: {
 				printf("Unexpected user mode exception %d %d\n", which, type);
 				ASSERT(FALSE);

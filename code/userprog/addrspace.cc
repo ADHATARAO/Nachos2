@@ -195,3 +195,10 @@ AddrSpace::RestoreState ()
     machine->pageTable = pageTable;
     machine->pageTableSize = numPages;
 }
+
+
+void
+AddrSpace::WriteSpReg()
+{
+	machine->WriteRegister (StackReg, numPages * PageSize - 16);
+}
