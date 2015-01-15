@@ -214,6 +214,7 @@ Cleanup ()
 // To clean for synchConsole
 #ifdef CHANGED
     delete synchConsole;
+
 #endif
 
     delete timer;

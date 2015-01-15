@@ -42,12 +42,43 @@ char SynchConsole::SynchGetChar()
 
 void SynchConsole::SynchPutString(const char s[])
 {
-// ...
+	for(int i=0; i<MAX_STRING_SIZE-1;i++) {
+		if(s[i] == '\0')
+			break;
+		this->SynchPutChar(s[i]);
+	}
 }
+
 
 void SynchConsole::SynchGetString(char *s, int n)
 {
-// ...
+
+	int i;
+	char c;
+	for (i=0; i<n-1; i++) {
+		c = this->SynchGetChar();
+
+		if(c == EOF || c =='\n')
+			break;
+		else
+			s[i] = c;
+	}
+	s[i] = '\0';
+}
+
+void SynchConsole::SynchPutInt(int value) {
+	char * buffer = new char[MAX_STRING_SIZE];
+	snprintf(buffer,MAX_STRING_SIZE, "%d", value);
+	this->SynchPutString(buffer);
+	delete [] buffer;
+}
+
+
+void SynchConsole::SynchGetInt(int *n){
+	char *buffer = new char[MAX_STRING_SIZE];
+	this->SynchGetString(buffer, MAX_STRING_SIZE);
+	sscanf(buffer,"%i",n);
+	delete [] buffer;
 }
 
 #endif // CHANGED
