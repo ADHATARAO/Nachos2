@@ -81,7 +81,7 @@ class Thread
     // THEY MUST be in this position for SWITCH to work.
     int *stackTop;		// the current stack pointer
     int machineState[MachineStateSize];	// all registers except for stackTop
-
+    int idThread;
   public:
       Thread (const char *debugName);	// initialize a Thread 
      ~Thread ();		// deallocate a Thread
@@ -91,7 +91,14 @@ class Thread
 
     // basic thread operations
 
+#ifdef CHANGED
+     int GetIdThread();
+     void SetIdThread(int id);
+#endif //CHANGED
     void Fork (VoidFunctionPtr func, int arg);	// Make thread run (*func)(arg)
+#ifdef CHANGED
+    void ForkExec (VoidFunctionPtr func, int arg, int addr);
+#endif
     void Yield ();		// Relinquish the CPU if any 
     // other thread is runnable
     void Sleep ();		// Put the thread to sleep and 
@@ -136,7 +143,6 @@ class Thread
   public:
     void SaveUserState ();	// save user-level register state
     void RestoreUserState ();	// restore user-level register state
-
     AddrSpace *space;		// User code this thread is running.
 #endif
 };
@@ -156,3 +162,4 @@ extern "C"
 }
 
 #endif				// THREAD_H
+

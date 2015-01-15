@@ -2,20 +2,29 @@
 
 void print(void * arg) {
 
-	int num = (int)arg;
+	char* ch = (char*)arg;
+while (1==1){
+	PutString(ch);
+		PutChar('\n');
 
-	PutString("In the print function : \n");
-	PutInt(num);
-	PutChar('\n');
-//	UserThreadExit();
+}
+	//PutString(ch);
+	//PutChar('\n');
+	UserThreadExit();
 }
 
 int main() {
 
-	int i =10;
+	PutString("In the main function : \n");
 
-	UserThreadCreate(print, (void *) &i);
-	//UserThreadCreate(print, (void *) j);
+	char ch[] ="hello";
+	char ch1[] ="salut";
+	UserThreadCreate(print, (void *) ch);
+	PutString("In the main function une autre fois : \n");
+	UserThreadCreate(print, (void *) ch1);
+	PutString("In the main function une autre fois aussi :p: \n");
+
+
 
 	return 0;
 }

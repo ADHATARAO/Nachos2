@@ -122,7 +122,8 @@ ExceptionHandler(ExceptionType which)
 			}
 			case SC_Exit: {
 				DEBUG('a', "Program exit.\n");
-				Exit(0);
+				interrupt->Halt();
+
 				break;
 			}
 			case SC_PutChar: {
@@ -193,16 +194,16 @@ ExceptionHandler(ExceptionType which)
 
 				int result = do_UserThreadCreate(f,arg);
 
-//				machine->WriteRegister(2,result);
+				machine->WriteRegister(2,result);
 
-				printf("result %d>>>",result);
+
 
 				break;
 			}
 			case SC_UserThreadExit:
 			{
 				DEBUG('t', "UserThreadExit, initiated by user program.\n");
-//				do_UserThreadExit();
+				do_UserThreadExit();
 
 				printf("in the UserThreadExit switch case \n");
 
@@ -215,7 +216,12 @@ ExceptionHandler(ExceptionType which)
 				break;
 			}
 		}
-		UpdatePC();
+
 	}
+	else {
+		printf("Unexpected user mode exception %d %d\n", which, type);
+		ASSERT(FALSE);
+	}
+	UpdatePC();
 }
 #endif // CHANGED
