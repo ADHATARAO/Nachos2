@@ -6,6 +6,8 @@
 #include "copyright.h"
 #include "utility.h"
 #include "console.h"
+#include "synch.h"
+
 
 class SynchConsole {
 public:
@@ -23,6 +25,10 @@ public:
 
 private:
 	Console *console;
+	Semaphore *writeChar;
+	Semaphore *readChar;
+	Semaphore *writeString;
+	Semaphore *readString;
 };
 #endif // SYNCHCONSOLE_H
 

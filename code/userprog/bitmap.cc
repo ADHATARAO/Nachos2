@@ -97,6 +97,7 @@ BitMap::Test (int which)
 int
 BitMap::Find ()
 {
+
     for (int i = 0; i < numBits; i++)
 	if (!Test (i))
 	  {

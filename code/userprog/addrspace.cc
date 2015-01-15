@@ -1,3 +1,4 @@
+
 // addrspace.cc 
 //      Routines to manage address spaces (executing user programs).
 //
@@ -19,7 +20,9 @@
 #include "system.h"
 #include "addrspace.h"
 #include "noff.h"
-
+#ifdef CHANGED
+#include "bitmap.h"
+#endif
 #include <strings.h>		/* for bzero */
 
 //----------------------------------------------------------------------
@@ -119,7 +122,9 @@ AddrSpace::AddrSpace (OpenFile * executable)
 			       [noffH.initData.virtualAddr]),
 			      noffH.initData.size, noffH.initData.inFileAddr);
       }
-
+#ifdef CHANGED
+    bitmapThreadStack= new BitMap(10);
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -163,11 +168,21 @@ AddrSpace::InitRegisters ()
     // Set the stack register to the end of the address space, where we
     // allocated the stack; but subtract off a bit, to make sure we don't
     // accidentally reference off the end!
-    machine->WriteRegister (StackReg, numPages * PageSize - 16);
+    machine->WriteRegister (StackReg, BeginPointStack());
     DEBUG ('a', "Initializing stack register to %d\n",
 	   numPages * PageSize - 16);
 }
+#ifdef CHANGED
+	int AddrSpace::BeginPointStack(){
 
+
+		int find = bitmapThreadStack->Find();
+
+		ASSERT(find != -1 );
+		currentThread->SetIdThread(find);
+		return numPages*PageSize - find*PagePerThread*PageSize;
+}
+#endif
 //----------------------------------------------------------------------
 // AddrSpace::SaveState
 //      On a context switch, save any machine state, specific
@@ -197,8 +212,8 @@ AddrSpace::RestoreState ()
 }
 
 
-void
-AddrSpace::WriteSpReg()
-{
-	machine->WriteRegister (StackReg, numPages * PageSize - 16);
-}
+//void
+//AddrSpace::WriteSpReg()
+//{
+//	machine->WriteRegister (StackReg, numPages * PageSize - 16);
+//}
