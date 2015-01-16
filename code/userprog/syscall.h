@@ -30,6 +30,7 @@
 #define SC_Fork		9
 #define SC_Yield	10
 
+#ifdef CHANGED
 #define SC_PutChar	11 // adding SC_PutChar syscall
 #define SC_PutString	12 // adding SC_PutString syscall
 #define SC_GetChar	13
@@ -39,6 +40,7 @@
 
 #define SC_UserThreadCreate 17
 #define SC_UserThreadExit 18
+#endif //CHANGED
 
 #ifdef IN_USER_MODE
 
@@ -138,19 +140,19 @@ void Fork (void (*func) ());
  */
 void Yield ();
 
-
+#ifdef CHANGED
 void PutChar(char c); //Putchar syscall function
-void PutString(char *s); //PutString syscall function
-
 char GetChar();
+
+void PutString(char *s); //PutString syscall function
 void GetString(char *s, int n);
 
 void PutInt(int value);
 void GetInt(int *n);
 
 int UserThreadCreate(void f(void *arg), void *arg);
-//int UserThreadCreate(void * f, void *arg);
 void UserThreadExit();
+#endif //CHANGED
 
 #endif // IN_USER_MODE
 

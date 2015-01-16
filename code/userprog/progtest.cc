@@ -14,7 +14,9 @@
 #include "addrspace.h"
 #include "synch.h"
 
+#ifdef CHANGED
 #include "synchconsole.h"
+#endif //CHANGED
 
 //----------------------------------------------------------------------
 // StartProcess

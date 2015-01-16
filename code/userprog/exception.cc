@@ -25,23 +25,24 @@
 #include "system.h"
 #include "syscall.h"
 
+#ifdef CHANGED
 #include "userthread.h"
+#endif //CHANGED
 
 //----------------------------------------------------------------------
 // UpdatePC : Increments the Program Counter register in order to resume
 // the user program immediately after the "syscall" instruction.
 //----------------------------------------------------------------------
-static void
-UpdatePC ()
-{
-    int pc = machine->ReadRegister (PCReg);
-    machine->WriteRegister (PrevPCReg, pc);
-    pc = machine->ReadRegister (NextPCReg);
-    machine->WriteRegister (PCReg, pc);
-    pc += 4;
-    machine->WriteRegister (NextPCReg, pc);
+static void UpdatePC() {
+	int pc = machine->ReadRegister(PCReg);
+	machine->WriteRegister(PrevPCReg, pc);
+	pc = machine->ReadRegister(NextPCReg);
+	machine->WriteRegister(PCReg, pc);
+	pc += 4;
+	machine->WriteRegister(NextPCReg, pc);
 }
 
+#ifdef CHANGED
 void copyStringFromMachine(int from, char *to, unsigned size)
 {
 	int byte;
@@ -53,16 +54,15 @@ void copyStringFromMachine(int from, char *to, unsigned size)
 			machine->ReadMem(from + offset + i, 1, &byte);
 
 			if ((char) byte == '\0')
-				break;
+			break;
 			to[i] = (char) byte;
 		}
 
 		offset = offset + i;
 		to[i] = '\0';
 		synchConsole->SynchPutString(to);
-	} while ((char) byte != '\0');
+	}while ((char) byte != '\0');
 }
-
 
 void writeStringToMachine(char * string, int to, unsigned size)
 {
@@ -73,7 +73,7 @@ void writeStringToMachine(char * string, int to, unsigned size)
 		machine->WriteMem(to + i, 1, string[i]);
 	}
 }
-
+#endif //CHANGED
 //----------------------------------------------------------------------
 // ExceptionHandler
 //      Entry point into the Nachos kernel.  Called when a user program
@@ -97,9 +97,7 @@ void writeStringToMachine(char * string, int to, unsigned size)
 //      are in machine.h.
 //----------------------------------------------------------------------
 
-void
-ExceptionHandler(ExceptionType which)
-{
+void ExceptionHandler(ExceptionType which) {
 	int type = machine->ReadRegister(2);
 
 	#ifndef CHANGED // Noter le if*n*def
@@ -111,117 +109,107 @@ ExceptionHandler(ExceptionType which)
 			ASSERT(FALSE);
 		}
 	#else // CHANGED
+		if (which == SyscallException)
+		{
+			switch (type) {
+				case SC_Halt: {
+					DEBUG('a', "Shutdown, initiated by user program.\n");
+					interrupt->Halt();
+					break;
+				}
+				case SC_Exit: {
+					DEBUG('a', "Program exit.\n");
+					interrupt->Halt();
 
-	if (which == SyscallException)
-	{
-		switch (type) {
-			case SC_Halt: {
-				DEBUG('a', "Shutdown, initiated by user program.\n");
-				interrupt->Halt();
-				break;
-			}
-			case SC_Exit: {
-				DEBUG('a', "Program exit.\n");
-				interrupt->Halt();
+					break;
+				}
+				case SC_PutChar: {
+					DEBUG('m', "PutChar, system call handler. \n");
 
-				break;
-			}
-			case SC_PutChar: {
-				DEBUG('m', "PutChar, system call handler. \n");
+					int charint = machine->ReadRegister(4); //The compiler puts the first argument char c in the r4 register
+					char ch = (char) charint;
+					synchConsole->SynchPutChar(ch);
+					break;
+				}
+				case SC_PutString: {
+					DEBUG('m', "PutString, system call handler.\n");
 
-				int charint = machine->ReadRegister(4); //The compiler puts the first argument char c in the r4 register
-				char ch = (char) charint;
-				synchConsole->SynchPutChar(ch);
-				break;
-			}
-			case SC_PutString: {
-				DEBUG('m', "PutString, system call handler.\n");
+					char *buffer = new char[MAX_STRING_SIZE];
+					copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
+					delete [] buffer;
+					break;
+				}
+				case SC_GetChar: {
+					DEBUG('m', "GetChar, system call handler.\n");
 
-				char *buffer = new char[MAX_STRING_SIZE];
-				copyStringFromMachine(machine->ReadRegister(4), buffer, MAX_STRING_SIZE);
-				delete [] buffer;
-				break;
-			}
-			case SC_GetChar: {
-				DEBUG('m', "GetChar, system call handler.\n");
+					machine->WriteRegister(2,(int) synchConsole->SynchGetChar());
+					break;
+				}
+				case SC_GetString: {
+					DEBUG('m', "GetString, system call handler.\n");
 
-				machine->WriteRegister(2,(int) synchConsole->SynchGetChar());
-				break;
-			}
-			case SC_GetString: {
-				DEBUG('m', "GetString, system call handler.\n");
-
-				char *buffer = new char[MAX_STRING_SIZE+1];
-				int reg5 = machine->ReadRegister(5), p = 0, size;
-				while (p < reg5 ) {
-					if (reg5  - p > MAX_STRING_SIZE+1)
+					char *buffer = new char[MAX_STRING_SIZE+1];
+					int reg5 = machine->ReadRegister(5), p = 0, size;
+					while (p < reg5 ) {
+						if (reg5 - p > MAX_STRING_SIZE+1)
 						size = MAX_STRING_SIZE+1;
-					else
+						else
 						size = reg5 - p;
 
-					synchConsole->SynchGetString(buffer, size);
-					writeStringToMachine(buffer, machine->ReadRegister(4)+p, strlen(buffer));
-					p+= strlen(buffer);
+						synchConsole->SynchGetString(buffer, size);
+						writeStringToMachine(buffer, machine->ReadRegister(4)+p, strlen(buffer));
+						p+= strlen(buffer);
 
-					if (strlen(buffer) != MAX_STRING_SIZE)
+						if (strlen(buffer) != MAX_STRING_SIZE)
 						break;
+					}
+					machine->WriteMem(machine->ReadRegister(4)+p+1, 1, '\0');
+					delete [] buffer;
+					break;
 				}
-				machine->WriteMem(machine->ReadRegister(4)+p+1, 1, '\0');
-				delete [] buffer;
-				break;
-			}
-			case SC_PutInt: {
-				DEBUG('m', "PutInt, system call handler.\n");
+				case SC_PutInt: {
+					DEBUG('m', "PutInt, system call handler.\n");
 
-				int value = machine->ReadRegister(4);
-				synchConsole->SynchPutInt(value);
-				break;
-			}
-			case SC_GetInt: {
-				DEBUG('m', "GetInt, system call handler.\n");
+					int value = machine->ReadRegister(4);
+					synchConsole->SynchPutInt(value);
+					break;
+				}
+				case SC_GetInt: {
+					DEBUG('m', "GetInt, system call handler.\n");
 
-				int num;
-				synchConsole->SynchGetInt(&num);
-				int adr = machine->ReadRegister(4);
-				machine->WriteMem(adr,4,num);
-				break;
-			}
-			case SC_UserThreadCreate:{
-				DEBUG('t', "UserThreadCreate, initiated by user program.\n");
+					int num;
+					synchConsole->SynchGetInt(&num);
+					int adr = machine->ReadRegister(4);
+					machine->WriteMem(adr,4,num);
+					break;
+				}
+				case SC_UserThreadCreate: {
+					DEBUG('t', "UserThreadCreate, initiated by user program.\n");
 
-				int f = machine->ReadRegister(4);
-				int arg = machine->ReadRegister(5);
+					int f = machine->ReadRegister(4);
+					int arg = machine->ReadRegister(5);
+					int result = do_UserThreadCreate(f,arg);
+					machine->WriteRegister(2,result);
+					break;
+				}
+				case SC_UserThreadExit:
+				{
+					DEBUG('t', "UserThreadExit, initiated by user program.\n");
+					do_UserThreadExit();
+					break;
+				}
 
-				int result = do_UserThreadCreate(f,arg);
-
-				machine->WriteRegister(2,result);
-
-
-
-				break;
-			}
-			case SC_UserThreadExit:
-			{
-				DEBUG('t', "UserThreadExit, initiated by user program.\n");
-				do_UserThreadExit();
-
-				printf("in the UserThreadExit switch case \n");
-
-				break;
-			}
-
-			default: {
-				printf("Unexpected user mode exception %d %d\n", which, type);
-				ASSERT(FALSE);
-				break;
-			}
-		}
-
-	}
-	else {
-		printf("Unexpected user mode exception %d %d\n", which, type);
-		ASSERT(FALSE);
-	}
+				default: {
+					printf("Unexpected user mode exception %d %d\n", which, type);
+					ASSERT(FALSE);
+					break;
+				}
+			} // end of switch case
+		} // end of if statement
+		else {
+			printf("Unexpected user mode exception %d %d\n", which, type);
+			ASSERT(FALSE);
+		} //end of else
+	#endif // CHANGED
 	UpdatePC();
 }
-#endif // CHANGED

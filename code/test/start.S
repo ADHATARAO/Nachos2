@@ -129,6 +129,7 @@ Yield:
 	j	$31
 	.end Yield
 
+#ifdef CHANGED
 	.globl PutChar
 	.ent	PutChar
 PutChar:
@@ -193,7 +194,7 @@ UserThreadExit:
     syscall
     j    $31
     .end UserThreadExit
-
+#endif //CHANGED
 
 /* dummy function to keep gcc happy */
         .globl  __main
