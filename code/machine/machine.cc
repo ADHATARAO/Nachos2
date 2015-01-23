@@ -55,7 +55,9 @@ void CheckEndian()
 Machine::Machine(bool debug)
 {
     int i;
-
+#ifdef CHANGED
+    nbProcess=0; // initialize the number of process to 0;
+#endif
     for (i = 0; i < NumTotalRegs; i++)
         registers[i] = 0;
     mainMemory = new char[MemorySize]; // total number of RAM
@@ -73,6 +75,7 @@ Machine::Machine(bool debug)
 
     singleStep = debug;
     CheckEndian();
+
 }
 
 //----------------------------------------------------------------------
@@ -200,6 +203,7 @@ Machine::DumpState()
     printf("\n");
 }
 
+
 //----------------------------------------------------------------------
 // Machine::ReadRegister/WriteRegister
 //   	Fetch or write the contents of a user program register.
@@ -217,4 +221,12 @@ void Machine::WriteRegister(int num, int value)
 	// DEBUG('m', "WriteRegister %d, value %d\n", num, value);
 	registers[num] = value;
     }
+#ifdef CHANGED
+int Machine::GetNbProcess(){
+return nbProcess;
+}
+void Machine::SetNbProcess(int nb){
+nbProcess = nb;
+}
+#endif
 

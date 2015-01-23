@@ -6,3 +6,4 @@ code/bin/.*.d
 *~
 *.swp
 *.swo
+/Debug/

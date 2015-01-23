@@ -1,4 +1,4 @@
-// addrspace.h 
+// addrspace.h
 //      Data structures to keep track of executing user programs 
 //      (address spaces).
 //
@@ -15,13 +15,14 @@
 
 #include "copyright.h"
 #include "filesys.h"
+
 #ifdef CHANGED
 #define PagePerThread 2
 #include "bitmap.h"
-
+#include "synch.h"
 #endif //CHANGED
 
-#define UserStackSize		1024	// increase this as necessary!
+#define UserStackSize		4096	// increase this as necessary!
 
 class AddrSpace
 {
@@ -37,16 +38,21 @@ class AddrSpace
     void SaveState ();		// Save/restore address space-specific
     void RestoreState ();	// info on a context switch 
 
-    //void WriteSpReg();
-    int BeginPointStack();
+	#ifdef CHANGED
+    int BeginPointStack(); // assigns stack for each thread created
+    void DealloateMapStack();//deallocates the bitmap, to free the memory for reuse
+
+	#endif //CHANGED
+
   private:
       TranslationEntry * pageTable;	// Assume linear page table translation
     // for now!
     unsigned int numPages;	// Number of pages in the virtual 
-#ifdef CHANGED
-BitMap* bitmapThreadStack;
-#endif
+
     // address space
+	#ifdef CHANGED
+	BitMap* bitmapThreadStack;
+	#endif //CHANGED
 };
 
 #endif // ADDRSPACE_H

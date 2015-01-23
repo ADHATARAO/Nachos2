@@ -8,6 +8,7 @@ CC_SRCS += \
 ../code/userprog/bitmap.cc \
 ../code/userprog/exception.cc \
 ../code/userprog/fork.cc \
+../code/userprog/frameprovider.cc \
 ../code/userprog/progtest.cc \
 ../code/userprog/synchconsole.cc \
 ../code/userprog/userthread.cc 
@@ -17,6 +18,7 @@ OBJS += \
 ./code/userprog/bitmap.o \
 ./code/userprog/exception.o \
 ./code/userprog/fork.o \
+./code/userprog/frameprovider.o \
 ./code/userprog/progtest.o \
 ./code/userprog/synchconsole.o \
 ./code/userprog/userthread.o 
@@ -26,6 +28,7 @@ CC_DEPS += \
 ./code/userprog/bitmap.d \
 ./code/userprog/exception.d \
 ./code/userprog/fork.d \
+./code/userprog/frameprovider.d \
 ./code/userprog/progtest.d \
 ./code/userprog/synchconsole.d \
 ./code/userprog/userthread.d 

@@ -130,6 +130,7 @@ Yield:
 	.end Yield
 
 #ifdef CHANGED
+//	Part 2
 	.globl PutChar
 	.ent	PutChar
 PutChar:
@@ -178,15 +179,16 @@ GetInt:
 	j	$31
 	.end GetInt
 
-    .globl UserThreadCreate
-    .ent UserThreadCreate
+	// Part 3
+	.globl UserThreadCreate
+    	.ent UserThreadCreate
 UserThreadCreate:
-    addiu $2,$0,SC_UserThreadCreate
-    //addiu $6,$0,UserThreadExit
-    syscall
-    j    $31
-    .end UserThreadCreate
-
+    	addiu $2,$0,SC_UserThreadCreate
+    // addiu $6,$0,UserThreadExit
+    	syscall
+    	j    $31
+    	.end UserThreadCreate
+	
     .globl UserThreadExit
     .ent UserThreadExit
 UserThreadExit:
@@ -194,6 +196,25 @@ UserThreadExit:
     syscall
     j    $31
     .end UserThreadExit
+
+   	.globl UserThreadJoin
+	.ent UserThreadJoin
+UserThreadJoin:
+	addiu $2,$0,SC_UserThreadJoin
+	syscall
+	j 	 $31
+	.end UserThreadJoin
+
+	//Part 4
+
+	.globl ForkExec
+	.ent ForkExec
+ForkExec:
+	addiu $2,$0,SC_ForkExec
+	syscall
+	j $31
+	.end ForkExec
+
 #endif //CHANGED
 
 /* dummy function to keep gcc happy */

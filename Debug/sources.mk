@@ -29,6 +29,7 @@ code/test \
 code/network \
 code/machine \
 code/filesys \
+code/build-origin \
 code/build \
 code/bin \
 
