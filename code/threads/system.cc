@@ -40,8 +40,9 @@ PostOffice *postOffice;
 #ifdef CHANGED
 #ifdef USER_PROGRAM
 SynchConsole *synchConsole;
-#endif
-#endif
+FrameProvider *frameProvider;
+#endif //USER_PROGRAM
+#endif //CHANGED
 
 // External definition, to allow us to take a pointer to this function
 extern void Cleanup ();
@@ -181,8 +182,11 @@ Initialize (int argc, char **argv)
 
 // To initialized for synchConsole
 #ifdef CHANGED
-    synchConsole = new SynchConsole (0, 0);////
+#ifdef USER_PROGRAM
+    synchConsole = new SynchConsole (0, 0);
+    frameProvider = new FrameProvider();
 #endif
+#endif // CHANGED
 
 
 }
@@ -213,9 +217,11 @@ Cleanup ()
 
 // To clean for synchConsole
 #ifdef CHANGED
+#ifdef USER_PROGRAM
     delete synchConsole;
-
-#endif
+    delete frameProvider;
+#endif //USER_PROGRAM
+#endif //CHANGED
 
     delete timer;
     delete scheduler;

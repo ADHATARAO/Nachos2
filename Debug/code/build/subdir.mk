@@ -10,6 +10,8 @@ O_SRCS += \
 ../code/build/halt.o \
 ../code/build/makethreads.o \
 ../code/build/matmult.o \
+../code/build/multithreads.o \
+../code/build/processtest.o \
 ../code/build/putchar.o \
 ../code/build/putint.o \
 ../code/build/putstring.o \
@@ -20,6 +22,7 @@ O_SRCS += \
 ../code/build/step2-bitmap.o \
 ../code/build/step2-console.o \
 ../code/build/step2-exception.o \
+../code/build/step2-frameprovider.o \
 ../code/build/step2-interrupt.o \
 ../code/build/step2-list.o \
 ../code/build/step2-machine.o \
@@ -39,7 +42,10 @@ O_SRCS += \
 ../code/build/step2-timer.o \
 ../code/build/step2-translate.o \
 ../code/build/step2-userthread.o \
-../code/build/step2-utility.o 
+../code/build/step2-utility.o \
+../code/build/testthreads.o \
+../code/build/userpages0.o \
+../code/build/userpages1.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

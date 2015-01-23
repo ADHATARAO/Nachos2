@@ -1,9 +1,0 @@
-#include "syscall.h"
-
-int main() {
-	char* ch="string ";
-	GetString(ch,100);
-    	PutString(ch);
-	PutChar('\n');
-    	Halt();
-}

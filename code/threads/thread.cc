@@ -47,6 +47,10 @@ Thread::Thread (const char *threadName)
     // user threads.
     for (int r=NumGPRegs; r<NumTotalRegs; r++)
       userRegisters[r] = 0;
+
+	#ifdef CHANGED
+    threadId = 0;
+    #endif //CHANGED
 #endif
 }
 
@@ -116,29 +120,7 @@ Thread::Fork (VoidFunctionPtr func, int arg)
     // are disabled!
     (void) interrupt->SetLevel (oldLevel);
 }
-#ifdef CHANGED
-void
-Thread::ForkExec (VoidFunctionPtr func, int arg, int addr)
-{
-	DEBUG ('t', "Forking thread \"%s\" with func = 0x%x, arg = %d\n",
-			name, (int) func, arg);
-	StackAllocate (func, arg);
-#ifdef USER_PROGRAM
-// LB: The addrspace should be tramsitted here, instead of later in
-// StartProcess, so that the pageTable can be restored at
-// launching time. This is crucial if the thread is launched with
-// an already running program, as in the "fork" Unix system call.
-// LB: Observe that currentThread->space may be NULL at that time.
-	AddrSpace *a = (AddrSpace *) addr;
-	this->space = a;
-#endif // USER_PROGRAM
 
-	IntStatus oldLevel = interrupt->SetLevel (IntOff);
-	scheduler->ReadyToRun (this); // ReadyToRun assumes that interrupts
-// are disabled!
-	(void) interrupt->SetLevel (oldLevel);
-	}
-#endif
 //----------------------------------------------------------------------
 // Thread::CheckOverflow
 //      Check a thread's stack to see if it has overrun the space
@@ -218,32 +200,23 @@ Thread::Finish ()
 //----------------------------------------------------------------------
 
 
-void Thread::Yield() {
+void Thread::Yield()
+{
+	Thread *nextThread;
+	IntStatus oldLevel = interrupt->SetLevel(IntOff);
 
+	ASSERT(this == currentThread);
 
+	DEBUG('t', "Yielding thread \"%s\"\n", getName());
 
+	nextThread = scheduler->FindNextToRun();
 
+	if (nextThread != NULL) {
+		scheduler->ReadyToRun(this);
+		scheduler->Run(nextThread);
 
-
-		Thread *nextThread;
-		IntStatus oldLevel = interrupt->SetLevel(IntOff);
-
-		ASSERT(this == currentThread);
-
-		DEBUG('t', "Yielding thread \"%s\"\n", getName());
-
-		nextThread = scheduler->FindNextToRun();
-
-		if (nextThread != NULL) {
-			scheduler->ReadyToRun(this);
-			scheduler->Run(nextThread);
-
-		}
-		(void) interrupt->SetLevel(oldLevel);
-
-
-
-
+	}
+	(void) interrupt->SetLevel(oldLevel);
 }
 
 //----------------------------------------------------------------------
@@ -445,12 +418,14 @@ Thread::RestoreUserState ()
 #endif
 
 #ifdef CHANGED
-int Thread::GetIdThread(){
-return idThread;
+int Thread::GetThreadId()
+{
+	return threadId;
 }
-void Thread::SetIdThread(int id){
-idThread = id;
+void Thread::SetThreadId(int id)
+{
+	threadId = id;
 }
-#endif
+#endif //CHANGED
 
 

@@ -14,6 +14,7 @@ RM := rm -rf
 -include code/network/subdir.mk
 -include code/machine/subdir.mk
 -include code/filesys/subdir.mk
+-include code/build-origin/subdir.mk
 -include code/build/subdir.mk
 -include code/bin/subdir.mk
 -include subdir.mk
