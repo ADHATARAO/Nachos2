@@ -1,6 +1,6 @@
 #include "syscall.h"
-#define THIS "ccc"
-#define THAT "ddd"
+#define THIS "aaa"
+#define THAT "bbb"
 const int N = 20; // Choose it large enough!
 
 void abc(char *s){
@@ -41,8 +41,8 @@ int main(){
 	PutString("main user Pages 1 debut \n");
 	PutChar('\n');
 	int id= UserThreadCreate(f, (void *) THIS);
-	UserThreadJoin(id);
 	f((void*) THAT);
+	UserThreadJoin(id);
 
 	return 0 ;
 }

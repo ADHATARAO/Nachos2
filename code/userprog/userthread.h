@@ -10,6 +10,7 @@ typedef struct Arguments{
 	int function;
 	int arg;
 	int id;
+	int call_back;
 
 } typeArg;
 
@@ -17,10 +18,10 @@ void increaseThreadNum();
 void decreaseThreadNum();
 int getThreadNum();
 
-extern int do_UserThreadCreate(int f, int arg);
+extern int do_UserThreadCreate(int f, int arg, int call_back);
 extern void do_UserThreadExit();
 extern void do_UserThreadJoin(int idThread);
-extern int getThreadId();
+extern int assignThreadId();
 
 void LockThread(int id);
 void FreeThread(int id);

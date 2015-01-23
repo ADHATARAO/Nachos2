@@ -6,7 +6,7 @@ void print(void * arg) {
 	PutString("In the print function : \n");
 	PutString(ch);
 	PutChar('\n');
-	UserThreadExit();
+//	UserThreadExit();
 }
 
 int main() {

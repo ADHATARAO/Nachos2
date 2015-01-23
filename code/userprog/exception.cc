@@ -212,7 +212,9 @@ void ExceptionHandler(ExceptionType which) {
 
 				int f = machine->ReadRegister(4);
 				int arg = machine->ReadRegister(5);
-				int result = do_UserThreadCreate(f,arg);
+				int call_back = machine->ReadRegister(6);
+
+				int result = do_UserThreadCreate(f,arg, call_back);
 
 				machine->WriteRegister(2,result);
 				break;
@@ -220,12 +222,12 @@ void ExceptionHandler(ExceptionType which) {
 			case SC_UserThreadExit:	{ // to terminate a user thread
 
 				DEBUG('t', "UserThreadExit, initiated by user program.\n");
-
 				do_UserThreadExit();
 				break;
 			}
 			case SC_UserThreadJoin:{ // to join a user thread
 
+				DEBUG('t', "UserThreadJoin, initiated by user program.\n");
 				int idThread = machine->ReadRegister(4);
 				do_UserThreadJoin(idThread);
 				break;
