@@ -64,6 +64,7 @@ extern void MailTest (int networkID);
 //Adding SynchConsoleTest
 #ifdef CHANGED
 extern void SynchConsoleTest(char *in, char *out);
+extern void RingTest(int networkID, int ring_size);
 #endif //CHANGED
 
 //----------------------------------------------------------------------
@@ -90,7 +91,7 @@ main (int argc, char **argv)
     (void) Initialize (argc, argv);
 
 #ifdef THREADS
-    ThreadTest ();
+//    ThreadTest ();
 #endif
 
     for (argc--, argv++; argc > 0; argc -= argCount, argv += argCount)
@@ -127,9 +128,9 @@ main (int argc, char **argv)
 	  			SynchConsoleTest (NULL, NULL);
 	  		else
 	  		  {
-	  		      ASSERT (argc > 2);
+	  		    ASSERT (argc > 2);
 	  		    SynchConsoleTest (*(argv + 1), *(argv + 2));
-	  		      argCount = 3;
+	  		    argCount = 3;
 	  		  }
 	  		interrupt->Halt ();	// once we start the console, then
 	  		// Nachos will loop forever waiting
@@ -179,6 +180,21 @@ main (int argc, char **argv)
 		MailTest (atoi (*(argv + 1)));
 		argCount = 2;
 	    }
+
+	#ifdef CHANGED
+	  else if (!strcmp (*argv, "-r"))
+		{
+			ASSERT (argc > 2);
+			Delay (3); // delay for 2 seconds
+			// to give the user time to
+			// start up another nachos
+			RingTest (atoi (*(argv + 1)), atoi (*(argv + 2)));
+			argCount = 3;
+
+//		  printf("in the ring test condition");
+		}
+	#endif //CHANGED
+
 #endif // NETWORK
       }
 
