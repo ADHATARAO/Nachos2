@@ -190,8 +190,6 @@ main (int argc, char **argv)
 			// start up another nachos
 			RingTest (atoi (*(argv + 1)), atoi (*(argv + 2)));
 			argCount = 3;
-
-//		  printf("in the ring test condition");
 		}
 	#endif //CHANGED
 

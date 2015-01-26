@@ -89,7 +89,9 @@ class Lock
     const char *name;		// for debugging
     // plus some other stuff you'll need to define
 
+#ifdef CHANGED
     Semaphore* mutex;
+#endif //CHANGED
 
 };
 
@@ -149,7 +151,6 @@ class Condition
     // plus some other stuff you'll need to define
 
 #ifdef CHANGED
-
     Semaphore* condvarwait; // suspends a thread on a wait
     int threadwait; // number of threads waiting on
     // a condvarwait for every condition)
