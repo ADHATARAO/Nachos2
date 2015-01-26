@@ -30,43 +30,93 @@
 //	4. wait for an acknowledgement from the other machine to our 
 //	    original message
 
-void
-MailTest(int farAddr)
+void MailTest(int farAddr) {
+	PacketHeader outPktHdr, inPktHdr;
+	MailHeader outMailHdr, inMailHdr;
+	const char *data = "Hello there!";
+	const char *ack = "Got it!";
+	char buffer[MaxMailSize];
+
+	for (int i = 0; i < 10; i++)
+	{
+		// construct packet, mail header for original message
+		// To: destination machine, mailbox 0
+		// From: our machine, reply to: mailbox 1
+		outPktHdr.to = farAddr;
+		outMailHdr.to = 0;
+		outMailHdr.from = 1;
+		outMailHdr.length = strlen(data) + 1;
+
+		// Send the first message
+		postOffice->Send(outPktHdr, outMailHdr, data);
+
+		// Wait for the first message from the other machine
+		postOffice->Receive(0, &inPktHdr, &inMailHdr, buffer);
+		printf("Got \"%s\" from %d, box %d\n", buffer, inPktHdr.from,
+				inMailHdr.from);
+		fflush(stdout);
+
+		// Send acknowledgement to the other machine (using "reply to" mailbox
+		// in the message that just arrived
+		outPktHdr.to = inPktHdr.from;
+		outMailHdr.to = inMailHdr.from;
+		outMailHdr.length = strlen(ack) + 1;
+
+		postOffice->Send(outPktHdr, outMailHdr, ack);
+
+		// Wait for the ack from the other machine to the first message we sent.
+		postOffice->Receive(1, &inPktHdr, &inMailHdr, buffer);
+		printf("Got \"%s\" from %d, box %d\n", buffer, inPktHdr.from,
+				inMailHdr.from);
+		fflush(stdout);
+	}// end of for loop
+	// Then we're done!
+	interrupt->Halt();
+}
+
+void RingTest(int farAddr, int ring_size)
 {
-    PacketHeader outPktHdr, inPktHdr;
-    MailHeader outMailHdr, inMailHdr;
-    const char *data = "Hello there!";
-    const char *ack = "Got it!";
-    char buffer[MaxMailSize];
+	PacketHeader outPktHdr, inPktHdr;
+	MailHeader outMailHdr, inMailHdr;
+	const char *data = "Message Token";
+	char buffer[MaxMailSize];
 
-    // construct packet, mail header for original message
-    // To: destination machine, mailbox 0
-    // From: our machine, reply to: mailbox 1
-    outPktHdr.to = farAddr;		
-    outMailHdr.to = 0;
-    outMailHdr.from = 1;
-    outMailHdr.length = strlen(data) + 1;
+	int next_addr = (farAddr + 1) % ring_size;
 
-    // Send the first message
-    postOffice->Send(outPktHdr, outMailHdr, data); 
+	if(farAddr == 0)
+	{
+		outPktHdr.to = next_addr;
+		outMailHdr.to = 0;
+		outMailHdr.from = 1;
+		outMailHdr.length = strlen(data) + 1;
 
-    // Wait for the first message from the other machine
-    postOffice->Receive(0, &inPktHdr, &inMailHdr, buffer);
-    printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
-    fflush(stdout);
+		// Send the first message
+		postOffice->Send(outPktHdr, outMailHdr, data);
+		printf("Sending \"%s\" to %d, box %d\n", data, outPktHdr.to,outMailHdr.from);
+		fflush(stdout);
 
-    // Send acknowledgement to the other machine (using "reply to" mailbox
-    // in the message that just arrived
-    outPktHdr.to = inPktHdr.from;
-    outMailHdr.to = inMailHdr.from;
-    outMailHdr.length = strlen(ack) + 1;
-    postOffice->Send(outPktHdr, outMailHdr, ack); 
+		// Wait for the first message from the other machine
+		postOffice->Receive(0, &inPktHdr, &inMailHdr, buffer);
+		printf("Receive \"%s\" from %d, box %d\n", buffer, inPktHdr.from,inMailHdr.from);
+		fflush(stdout);
+	}
+	else
+	{
+		// Wait for the first message from the other machine
+		postOffice->Receive(0, &inPktHdr, &inMailHdr, buffer);
+		printf("Receive \"%s\" from %d, box %d\n", buffer, inPktHdr.from, inMailHdr.from);
+		fflush(stdout);
 
-    // Wait for the ack from the other machine to the first message we sent.
-    postOffice->Receive(1, &inPktHdr, &inMailHdr, buffer);
-    printf("Got \"%s\" from %d, box %d\n",buffer,inPktHdr.from,inMailHdr.from);
-    fflush(stdout);
+		outPktHdr.to = next_addr;
+		outMailHdr.to = 0;
+		outMailHdr.from = 1;
+		outMailHdr.length = strlen(data) + 1;
 
-    // Then we're done!
-    interrupt->Halt();
+		// Send the first message
+		postOffice->Send(outPktHdr, outMailHdr, data);
+		printf("Sending \"%s\" to %d, box %d\n", buffer, outPktHdr.to,outMailHdr.from);
+		fflush(stdout);
+	}
+
+	interrupt->Halt();
 }

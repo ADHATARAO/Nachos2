@@ -88,6 +88,9 @@ class Lock
   private:
     const char *name;		// for debugging
     // plus some other stuff you'll need to define
+
+    Semaphore* mutex;
+
 };
 
 // The following class defines a "condition variable".  A condition
@@ -130,7 +133,7 @@ class Condition
      ~Condition ();		// deallocate the condition
     const char *getName ()
     {
-	return (name);
+	     return (name);
     }
 
     void Wait (Lock * conditionLock);	// these are the 3 operations on 
@@ -144,5 +147,15 @@ class Condition
   private:
     const char *name;
     // plus some other stuff you'll need to define
+
+#ifdef CHANGED
+
+    Semaphore* condvarwait; // suspends a thread on a wait
+    int threadwait; // number of threads waiting on
+    // a condvarwait for every condition)
+    // Semaphore lock; // controls entry to monitor
+    //Semaphore* condsig; // suspends this thread when signaling another
+    //int condsigCount; // number of threads suspended
+#endif //CHANGED
 };
 #endif // SYNCH_H
