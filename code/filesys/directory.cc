@@ -35,23 +35,37 @@
 //	"size" is the number of entries in the directory
 //----------------------------------------------------------------------
 
-Directory::Directory(int size)
-{
-    table = new DirectoryEntry[size];
-    tableSize = size;
-    for (int i = 0; i < tableSize; i++)
-	table[i].inUse = FALSE;
+Directory::Directory(int size) {
+	table = new DirectoryEntry[size];
+	tableSize = size;
+	for (int i = 0; i < tableSize; i++)
+		table[i].inUse = FALSE;
+#ifdef CHANGED
+	int sector = 1;
+	int parentSector = 1;
+	linkToParentDirectory( sector , parentSector ) ;
+#endif
 }
+#ifdef CHANGED
+Directory::Directory(int size, int sector, int parentSector) {
+
+	table = new DirectoryEntry[size];
+	tableSize = size;
+	for (int i = 2; i < tableSize; i++)
+		table[i].inUse = FALSE;
+
+	linkToParentDirectory( sector , parentSector ) ;
+}
+#endif
 
 //----------------------------------------------------------------------
 // Directory::~Directory
 // 	De-allocate directory data structure.
 //----------------------------------------------------------------------
 
-Directory::~Directory()
-{ 
-    delete [] table;
-} 
+Directory::~Directory() {
+	delete[] table;
+}
 
 //----------------------------------------------------------------------
 // Directory::FetchFrom
@@ -60,10 +74,8 @@ Directory::~Directory()
 //	"file" -- file containing the directory contents
 //----------------------------------------------------------------------
 
-void
-Directory::FetchFrom(OpenFile *file)
-{
-    (void) file->ReadAt((char *)table, tableSize * sizeof(DirectoryEntry), 0);
+void Directory::FetchFrom(OpenFile *file) {
+	(void) file->ReadAt((char *) table, tableSize * sizeof(DirectoryEntry), 0);
 }
 
 //----------------------------------------------------------------------
@@ -73,10 +85,8 @@ Directory::FetchFrom(OpenFile *file)
 //	"file" -- file to contain the new directory contents
 //----------------------------------------------------------------------
 
-void
-Directory::WriteBack(OpenFile *file)
-{
-    (void) file->WriteAt((char *)table, tableSize * sizeof(DirectoryEntry), 0);
+void Directory::WriteBack(OpenFile *file) {
+	(void) file->WriteAt((char *) table, tableSize * sizeof(DirectoryEntry), 0);
 }
 
 //----------------------------------------------------------------------
@@ -87,13 +97,11 @@ Directory::WriteBack(OpenFile *file)
 //	"name" -- the file name to look up
 //----------------------------------------------------------------------
 
-int
-Directory::FindIndex(const char *name)
-{
-    for (int i = 0; i < tableSize; i++)
-        if (table[i].inUse && !strncmp(table[i].name, name, FileNameMaxLen))
-	    return i;
-    return -1;		// name not in directory
+int Directory::FindIndex(const char *name) {
+	for (int i = 0; i < tableSize; i++)
+		if (table[i].inUse && !strncmp(table[i].name, name, FileNameMaxLen))
+			return i;
+	return -1; // name not in directory
 }
 
 //----------------------------------------------------------------------
@@ -105,14 +113,21 @@ Directory::FindIndex(const char *name)
 //	"name" -- the file name to look up
 //----------------------------------------------------------------------
 
-int
-Directory::Find(const char *name)
-{
-    int i = FindIndex(name);
+int Directory::Find(const char *name) {
+	int i = FindIndex(name);
 
-    if (i != -1)
-	return table[i].sector;
-    return -1;
+#ifdef CHANGED
+	if(i==0||i==1){ // we can't delete the "." or the ".." Entry
+		printf("permission denied, can't delete parent or current Directory !!\n");
+		return (-1);
+	}
+#endif
+	if (i != -1)
+		return table[i].sector;
+
+		return -1;
+
+
 }
 
 //----------------------------------------------------------------------
@@ -126,20 +141,19 @@ Directory::Find(const char *name)
 //	"newSector" -- the disk sector containing the added file's header
 //----------------------------------------------------------------------
 
-bool
-Directory::Add(const char *name, int newSector)
-{ 
-    if (FindIndex(name) != -1)
-	return FALSE;
+bool Directory::Add(const char *name, int newSector) {
+	if (FindIndex(name) != -1)
+		return FALSE;
 
-    for (int i = 0; i < tableSize; i++)
-        if (!table[i].inUse) {
-            table[i].inUse = TRUE;
-            strncpy(table[i].name, name, FileNameMaxLen); 
-            table[i].sector = newSector;
-        return TRUE;
-	}
-    return FALSE;	// no space.  Fix when we have extensible files.
+	for (int i = 0; i < tableSize; i++)
+		if (!table[i].inUse) {
+			table[i].inUse = TRUE;
+			strncpy(table[i].name, name, FileNameMaxLen);
+			table[i].sector = newSector;
+
+			return TRUE;
+		}
+	return FALSE; // no space.  Fix when we have extensible files.
 }
 
 //----------------------------------------------------------------------
@@ -150,15 +164,14 @@ Directory::Add(const char *name, int newSector)
 //	"name" -- the file name to be removed
 //----------------------------------------------------------------------
 
-bool
-Directory::Remove(const char *name)
-{ 
-    int i = FindIndex(name);
+bool Directory::Remove(const char *name) {
+	//char rep;
+	int i = FindIndex(name);
+	if (i == -1)
+		return FALSE; // name not in directory
 
-    if (i == -1)
-	return FALSE; 		// name not in directory
-    table[i].inUse = FALSE;
-    return TRUE;	
+	table[i].inUse = FALSE;
+	return TRUE;
 }
 
 //----------------------------------------------------------------------
@@ -166,12 +179,10 @@ Directory::Remove(const char *name)
 // 	List all the file names in the directory. 
 //----------------------------------------------------------------------
 
-void
-Directory::List()
-{
-   for (int i = 0; i < tableSize; i++)
-	if (table[i].inUse)
-	    printf("%s\n", table[i].name);
+void Directory::List() {
+	for (int i = 0; i < tableSize; i++)
+		if (table[i].inUse)
+			printf("%s\n", table[i].name);
 }
 
 //----------------------------------------------------------------------
@@ -180,18 +191,108 @@ Directory::List()
 //	and the contents of each file.  For debugging.
 //----------------------------------------------------------------------
 
-void
-Directory::Print()
-{ 
-    FileHeader *hdr = new FileHeader;
+void Directory::Print() {
+	FileHeader *hdr = new FileHeader;
 
-    printf("Directory contents:\n");
-    for (int i = 0; i < tableSize; i++)
-	if (table[i].inUse) {
-	    printf("Name: %s, Sector: %d\n", table[i].name, table[i].sector);
-	    hdr->FetchFrom(table[i].sector);
-	    hdr->Print();
-	}
-    printf("\n");
-    delete hdr;
+	printf("Directory contents:\n");
+	for (int i = 0; i < tableSize; i++)
+		if (table[i].inUse) {
+			printf("Name: %s, Sector: %d\n", table[i].name, table[i].sector);
+			hdr->FetchFrom(table[i].sector);
+			hdr->Print();
+		}
+	printf("\n");
+	delete hdr;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+#ifdef CHANGED
+void Directory::linkToParentDirectory(int sector, int parentSector){
+
+	table[0].inUse = true;
+	table[0].sector = sector;
+	strcpy(table[0].name, ".");
+	table[1].inUse = true;
+	table[1].sector = parentSector;
+	strcpy(table[1].name, "..");
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+int Directory::getSector(int position) {
+
+	return this->table[position].sector;
+
+}
+/////////////////////////////////////////////////////////////////////////////////////////
+int Directory::getCurrentSector(){
+	Directory *currentDir = this;
+
+	return currentDir->getSector(0);
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+int Directory::getParentSector(){
+	Directory *currentDir = this;
+	return currentDir->getSector(1);
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+char * Directory::getNameFromSector(int sector) {
+	Directory *currentDir = this;
+	int i;
+	for (i = 2; i < tableSize; i++)
+	if (currentDir->getSector(i)== sector) {
+		return currentDir->table[i].name;
+	}
+	return NULL;
+}
+///////////////////////////////////////////////////////////////////////////////////////////
+bool Directory::isFull() {
+	Directory *currentDir = this;
+	int i;
+	for ( i = 2; i < tableSize; i++) {
+		if(currentDir->table[i].inUse == false)
+		return false;
+	}
+	return true;
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+bool Directory::isEmpty() {
+	Directory *currentDir = this;
+	int i;
+	for ( i = 2; i < tableSize; i++) {
+		if(currentDir->table[i].inUse == true)
+		return false;
+	}
+	return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+bool Directory::isRoot() {
+
+	// ". == ".."
+	return (this->getSector(0) == this->getSector(1));
+};
+//////////////////////////////////////////////////////////////////////////////////////////
+char *Directory::getDirName() {
+	Directory * currentDir = this;
+	Directory * parentDir;
+	int parentSector;
+	char * fullname = new char[FileNameMaxLen];
+	char * temp = new char[FileNameMaxLen];
+	strcpy(fullname, "/");
+	char * currentName = new char [FileNameMaxLen];
+	while (!currentDir->isRoot()) {
+		parentSector = currentDir->getParentSector();
+		OpenFile * parentDirFile = new OpenFile(parentSector);
+		parentDir = new Directory(this->tableSize);
+		parentDir->FetchFrom(parentDirFile);
+		currentName = parentDir->getNameFromSector(currentDir->getCurrentSector());
+		strcpy(temp, "/");
+		strcat(temp, currentName);
+		strcat(temp, fullname);
+		strcpy(fullname, temp);
+		currentDir = parentDir;
+	}
+	return fullname;
+}
+
+#endif

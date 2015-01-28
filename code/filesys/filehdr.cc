@@ -23,7 +23,6 @@
 // of liability and disclaimer of warranty provisions.
 
 #include "copyright.h"
-
 #include "system.h"
 #include "filehdr.h"
 
@@ -42,9 +41,15 @@ bool
 FileHeader::Allocate(BitMap *freeMap, int fileSize)
 { 
     numBytes = fileSize;
-    numSectors  = divRoundUp(fileSize, SectorSize);
-    if (freeMap->NumClear() < numSectors)
+#ifdef CHANGED
+    numSectors  = divRoundUp(abs(fileSize), SectorSize); // make sure that size is always positive
+#endif
+    if (freeMap->NumClear() < numSectors){
+#ifdef CHANGED
+    printf("pas assez de secteur pour l'allocation\n");
+#endif
 	return FALSE;		// not enough space
+    }
 
     for (int i = 0; i < numSectors; i++)
 	dataSectors[i] = freeMap->Find();
@@ -117,8 +122,15 @@ FileHeader::ByteToSector(int offset)
 int
 FileHeader::FileLength()
 {
-    return numBytes;
+    return  abs(numBytes);
 }
+#ifdef CHANGED
+bool
+FileHeader::isDirectoryHeader()
+{
+	return (numBytes < 0);
+}
+#endif
 
 //----------------------------------------------------------------------
 // FileHeader::Print

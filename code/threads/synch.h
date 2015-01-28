@@ -18,7 +18,7 @@
 #define SYNCH_H
 
 #include "copyright.h"
-#include "thread.h"
+//#include "thread.h"
 #include "list.h"
 
 // The following class defines a "semaphore" whose value is a non-negative
@@ -87,7 +87,8 @@ class Lock
 
   private:
     const char *name;		// for debugging
-    // plus some other stuff you'll need to define
+
+
 };
 
 // The following class defines a "condition variable".  A condition
@@ -143,6 +144,6 @@ class Condition
 
   private:
     const char *name;
-    // plus some other stuff you'll need to define
+
 };
 #endif // SYNCH_H

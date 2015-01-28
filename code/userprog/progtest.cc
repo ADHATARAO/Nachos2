@@ -14,7 +14,9 @@
 #include "addrspace.h"
 #include "synch.h"
 
+#ifdef CHANGED
 #include "synchconsole.h"
+#endif //CHANGED
 
 //----------------------------------------------------------------------
 // StartProcess
@@ -36,10 +38,17 @@ StartProcess (char *filename)
     space = new AddrSpace (executable);
     currentThread->space = space;
 
+	#ifdef CHANGED
+	currentThread->SetThreadId(0);
+	#endif //CHANGED
+
     delete executable;		// close file
 
     space->InitRegisters ();	// set the initial register values
     space->RestoreState ();	// load page table register
+#ifdef CHANGED
+    machine->SetNbProcess(machine->GetNbProcess()+1);
+#endif //CHANGED
 
     machine->Run ();		// jump to the user progam
     ASSERT (FALSE);		// machine->Run never returns;

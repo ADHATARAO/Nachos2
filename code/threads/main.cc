@@ -58,8 +58,13 @@
 
 extern void ThreadTest (void), Copy (const char *unixFile, const char *nachosFile);
 extern void Print (char *file), PerformanceTest (void);
-extern void StartProcess (char *file), ConsoleTest (char *in, char *out), SynchConsoleTest (char *in, char *out);
+extern void StartProcess (char *file), ConsoleTest (char *in, char *out);
 extern void MailTest (int networkID);
+
+//Adding SynchConsoleTest
+#ifdef CHANGED
+extern void SynchConsoleTest(char *in, char *out);
+#endif //CHANGED
 
 //----------------------------------------------------------------------
 // main
@@ -78,6 +83,7 @@ extern void MailTest (int networkID);
 int
 main (int argc, char **argv)
 {
+
     int argCount;		// the number of arguments 
     // for a particular command
 
@@ -115,6 +121,7 @@ main (int argc, char **argv)
 		// for console input
 	    }
 //	  for SynchConsoleTest
+	#ifdef CHANGED
 	  else if (!strcmp (*argv, "-sc"))
 	  	    {			// test the console
 	  		if (argc == 1)
@@ -129,7 +136,7 @@ main (int argc, char **argv)
 	  		// Nachos will loop forever waiting
 	  		// for console input
 	  	    }
-
+	#endif //CHANGED
 #endif // USER_PROGRAM
 #ifdef FILESYS
 	  if (!strcmp (*argv, "-cp"))
@@ -162,6 +169,35 @@ main (int argc, char **argv)
 	    {			// performance test
 		PerformanceTest ();
 	    }
+#ifdef CHANGED
+	  else if(!strcmp (*argv, "-mkdir"))
+	  {
+		  fileSystem->MakeDir(*(argv + 1));
+	  }
+		else if(!strcmp (*argv, "-rm"))
+		{
+			fileSystem->removeDir(*(argv + 1));
+		}
+		else if(!strcmp (*argv, "-pwd"))
+		{
+			char * name =fileSystem->getNameDir((fileSystem->getCurrentDir())->getSector(1),(fileSystem->getCurrentDir())->getSector(0));
+			printf("%s\n",name);
+		}
+		else if(!strcmp (*argv, "-cd"))
+		{
+			fileSystem->moveToDir(*(argv + 1));
+		}
+		else if(!strcmp (*argv, "-cd.."))
+		{
+			fileSystem->moveToParent();
+		}
+		else if(!strcmp (*argv, "-path"))
+		{
+			fileSystem->moveToDirPath(*(argv + 1));
+		}
+
+#endif // CHANGED
+
 #endif // FILESYS
 #ifdef NETWORK
 	  if (!strcmp (*argv, "-o"))
@@ -176,7 +212,7 @@ main (int argc, char **argv)
 #endif // NETWORK
       }
 
-    currentThread->Finish ();	// NOTE: if the procedure "main" 
+   // currentThread->Finish ();	// NOTE: if the procedure "main"
     // returns, then the program "nachos"
     // will exit (as any other normal program
     // would).  But there may be other

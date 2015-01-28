@@ -20,6 +20,7 @@
 #include "post.h"
 
 #include <strings.h> /* for bzero */
+#include "thread.h"
 
 //----------------------------------------------------------------------
 // Mail::Mail

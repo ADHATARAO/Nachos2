@@ -30,15 +30,18 @@
 #define SC_Fork		9
 #define SC_Yield	10
 
-#define SC_PutChar	11 // adding SC_PutChar syscall
-#define SC_PutString	12 // adding SC_PutString syscall
-#define SC_GetChar	13
-#define SC_GetString	14
-#define SC_PutInt	15
-#define SC_GetInt	16
-
-#define SC_UserThreadCreate 17
-#define SC_UserThreadExit 18
+#ifdef CHANGED
+#define SC_PutChar	11 			// adding SC_PutChar syscall
+#define SC_PutString	12 		// adding SC_PutString syscall
+#define SC_GetChar	13			// adding SC_GetChar syscall
+#define SC_GetString	14 		// adding SC_GetString syscall
+#define SC_PutInt	15			// adding SC_PutInt  syscall
+#define SC_GetInt	16 			// adding SC_GetInt syscall
+#define SC_UserThreadCreate 17 	// adding SC_UserThreadCreate syscall
+#define SC_UserThreadExit 18	// adding SC_UserThreadExit syscall
+#define SC_UserThreadJoin 19	// adding SC_UserThreadJoin syscall
+#define SC_ForkExec			20	// adding SC_ForkExec syscall
+#endif //CHANGED
 
 #ifdef IN_USER_MODE
 
@@ -138,19 +141,23 @@ void Fork (void (*func) ());
  */
 void Yield ();
 
+#ifdef CHANGED
 
-void PutChar(char c); //Putchar syscall function
-void PutString(char *s); //PutString syscall function
-
+	// part 2
+void PutChar(char c);
 char GetChar();
+void PutString(char *s);
 void GetString(char *s, int n);
-
 void PutInt(int value);
 void GetInt(int *n);
-
+	// part 3
 int UserThreadCreate(void f(void *arg), void *arg);
-//int UserThreadCreate(void * f, void *arg);
 void UserThreadExit();
+void UserThreadJoin(int idThread);
+	// part 4
+int ForkExec(char* s);
+
+#endif //CHANGED
 
 #endif // IN_USER_MODE
 

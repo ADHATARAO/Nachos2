@@ -16,9 +16,6 @@
 #include "stats.h"
 #include "timer.h"
 
-
-
-
 // Initialization and cleanup routines
 extern void Initialize (int argc, char **argv);	// Initialization,
 						// called before anything else
@@ -54,9 +51,15 @@ extern PostOffice *postOffice;
 
 /*For SynchConsole*/
 #ifdef CHANGED
+#ifdef USER_PROGRAM
 #include "synchconsole.h"
 extern SynchConsole *synchConsole;
 #define MAX_STRING_SIZE 50
-#endif
+
+#include "frameprovider.h"
+extern FrameProvider *frameProvider;
+
+#endif //USER_PROGRAM
+#endif //CHANGED
 
 #endif // SYSTEM_H
