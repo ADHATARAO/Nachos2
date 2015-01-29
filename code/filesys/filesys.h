@@ -88,6 +88,7 @@ class FileSystem {
     void Print();			// List all the files and their contents
 
 #ifdef CHANGED
+    void ListCurrentDir();
     void moveToDirPath(char*);
     void updatePathName(bool decision,char* name );
     char *getPathName();
@@ -114,3 +115,4 @@ class FileSystem {
 #endif // FILESYS
 
 #endif // FS_H
+

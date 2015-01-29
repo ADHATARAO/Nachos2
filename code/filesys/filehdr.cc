@@ -42,7 +42,7 @@ FileHeader::Allocate(BitMap *freeMap, int fileSize)
 { 
     numBytes = fileSize;
 #ifdef CHANGED
-    numSectors  = divRoundUp(abs(fileSize), SectorSize); // make sure that size is always positive
+    numSectors  = divRoundUp(abs(fileSize), SectorSize); //abs to make sure that size is always positive
 #endif
     if (freeMap->NumClear() < numSectors){
 #ifdef CHANGED
@@ -160,3 +160,4 @@ FileHeader::Print()
     }
     delete [] data;
 }
+

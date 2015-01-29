@@ -63,7 +63,7 @@
 #define NumDirEntries 		10
 #define DirectoryFileSize 	(sizeof(DirectoryEntry) * NumDirEntries)
 #ifdef CHANGED
-#define FileNameMaxLen 		9
+#define FileNameMaxLen 		20
 #define MAX_PATH_Lenght 100
 #endif
 //----------------------------------------------------------------------
@@ -304,7 +304,15 @@ void FileSystem::List() {
 	directory->List();
 	delete directory;
 }
+#ifdef CHANGED
+void FileSystem::ListCurrentDir()
+{
 
+	pwd->Liste();
+}
+///////////////////////////////////////////////////////////////////////
+
+#endif
 //----------------------------------------------------------------------
 // FileSystem::Print
 // 	Print everything about the file system:
@@ -423,18 +431,17 @@ void FileSystem::moveToDirPath(char *path) {
 	FileHeader *fh= new FileHeader;
 	ASSERT(decision=='.'||decision=='/');
 	tmp = strtok(path,(char*) "/");
-
 	tab[i]=tmp;
-	printf("case %d est %s\n",i,tab[i]);
+
 
 	while(tmp!=NULL) {
 		i++;
 		tmp = strtok (NULL, "/");
 		tab[i]=tmp;
-		printf("case %d est %s\n",i,tab[i]);
+
 
 	}
-	printf(" we have %d directory to enter \n",i);
+
 	switch (decision) {
 
 		case '.':
@@ -491,7 +498,12 @@ int FileSystem::MakeDir ( char *name ) {
 	Directory *currentDir= this->getCurrentDir();
 
 	ASSERT(strlen(name) <FileNameMaxLen);
+
+
 	ASSERT(currentDir->Find(name)==-1);
+
+
+
 	ASSERT(currentDir->isFull()==FALSE);
 
 	BitMap * freeMap = new BitMap (NumSectors);
@@ -516,7 +528,7 @@ int FileSystem::MakeDir ( char *name ) {
 	DirHeader->WriteBack(freeSector);
 
 	Directory *newDir = new Directory(NumDirEntries, freeSector, currentSector);
-	printf("med sector makedir %d\n",freeSector);
+	//printf("med sector makedir %d\n",freeSector);
 
 	OpenFile *newDirFile = new OpenFile(freeSector);
 
@@ -581,3 +593,4 @@ bool FileSystem::removeDir(char *name) {
 }
 
 #endif
+
