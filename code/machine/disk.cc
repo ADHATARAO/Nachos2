@@ -269,3 +269,4 @@ Disk::UpdateLast(int newSector)
     lastSector = newSector;
     DEBUG('d', "Updating last sector = %d, %d\n", lastSector, bufferInit);
 }
+

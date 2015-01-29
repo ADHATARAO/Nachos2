@@ -184,7 +184,22 @@ void Directory::List() {
 		if (table[i].inUse)
 			printf("%s\n", table[i].name);
 }
+#ifdef CHANGED
+void Directory::Liste(){
+	for (int i = 2; i < tableSize; i++){
+			if (table[i].inUse){
+				FileHeader *fh = new FileHeader;
+				fh->FetchFrom(table[i].sector);
+				if(fh->isDirectoryHeader()){
+					printf("directory name : %s\n", table[i].name);
+				}else{
+					printf("File name : %s and size : %d\n", table[i].name,fh->FileLength());
+				}
 
+			}
+	}
+}
+#endif
 //----------------------------------------------------------------------
 // Directory::Print
 // 	List all the file names in the directory, their FileHeader locations,
@@ -296,3 +311,4 @@ char *Directory::getDirName() {
 }
 
 #endif
+

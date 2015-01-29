@@ -170,6 +170,55 @@ main (int argc, char **argv)
 	    {			// performance test
 		PerformanceTest ();
 	    }
+#ifdef CHANGED
+	  else if(!strcmp (*argv, "-mkdir"))
+	  {
+		  fileSystem->MakeDir(*(argv + 1));
+	  }
+		else if(!strcmp (*argv, "-rm"))
+		{
+			fileSystem->removeDir(*(argv + 1));
+		}
+		else if(!strcmp (*argv, "-pwd"))
+		{
+			char * name =fileSystem->getNameDir((fileSystem->getCurrentDir())->getSector(1),(fileSystem->getCurrentDir())->getSector(0));
+			printf("%s\n",name);
+		}
+		else if(!strcmp (*argv, "-cd"))
+		{
+			fileSystem->moveToDir(*(argv + 1));
+			
+		}
+		else if(!strcmp (*argv, "-cd.."))
+		{
+			fileSystem->moveToParent();
+		}
+		else if(!strcmp (*argv, "-path"))
+		{
+			fileSystem->moveToDirPath(*(argv + 1));
+		}
+		else if(!strcmp (*argv, "-ls"))
+		{
+			fileSystem->ListCurrentDir();
+		}
+		else if(!strcmp (*argv, "-test"))
+		{
+			fileSystem->MakeDir((char*)"med");
+			char * name =fileSystem->getNameDir((fileSystem->getCurrentDir())->getSector(1),(fileSystem->getCurrentDir())->getSector(0));
+			printf("%s\n",name);
+			fileSystem->moveToDir((char*)"med");
+			char* name1 =fileSystem->getNameDir((fileSystem->getCurrentDir())->getSector(1),(fileSystem->getCurrentDir())->getSector(0));
+			printf("%s\n",name1);
+			fileSystem->MakeDir((char*)"new directory");
+			 char* name2 =fileSystem->getNameDir((fileSystem->getCurrentDir())->getSector(1),(fileSystem->getCurrentDir())->getSector(0));
+			printf("%s\n",name2);
+			
+
+
+
+		}
+
+#endif // CHANGED
 #endif // FILESYS
 #ifdef NETWORK
 	  if (!strcmp (*argv, "-o"))
@@ -206,7 +255,7 @@ main (int argc, char **argv)
 #endif // NETWORK
       }
 
-    currentThread->Finish ();	// NOTE: if the procedure "main" 
+   // currentThread->Finish ();	// NOTE: if the procedure "main" 
     // returns, then the program "nachos"
     // will exit (as any other normal program
     // would).  But there may be other

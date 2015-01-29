@@ -19,7 +19,7 @@
 
 #include "openfile.h"
 
-#define FileNameMaxLen 		9	// for simplicity, we assume 
+#define FileNameMaxLen 		20	// for simplicity, we assume 
 					// file names are <= 9 characters long
 
 // The following class defines a "directory entry", representing a file
@@ -75,7 +75,7 @@ class Directory {
 					//  of the directory -- all the file
 					//  names and their contents.
 #ifdef CHANGED
-
+    void Liste();
     Directory(int size, int sector, int parentSector);
 
 	void linkToParentDirectory(int sector, int parentSector);
@@ -105,3 +105,4 @@ class Directory {
 
 
 #endif // DIRECTORY_H
+
