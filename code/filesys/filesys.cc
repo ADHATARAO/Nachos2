@@ -305,6 +305,7 @@ void FileSystem::List() {
 	delete directory;
 }
 #ifdef CHANGED
+
 void FileSystem::ListCurrentDir()
 {
 
