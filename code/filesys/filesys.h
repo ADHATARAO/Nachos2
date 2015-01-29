@@ -88,23 +88,25 @@ class FileSystem {
     void Print();			// List all the files and their contents
 
 #ifdef CHANGED
-    void ListCurrentDir();
-    void moveToDirPath(char*);
-    void updatePathName(bool decision,char* name );
-    char *getPathName();
-    bool moveToParent();
-    bool moveToDir(char *name);
-	Directory *pwd;
-	char* getNameDir(int parent , int currentsector);
-    Directory *getCurrentDir();
-    int MakeDir(char*);
-    bool removeDir(char *name);
+	    void moveToDirPath(char*);
+	    void updatePathName(bool decision,char* name );
+	    char *getPathName();
+	    bool moveToParent();
+	    bool moveToDir(char *name);
+	    Directory *pwd;
+	    char* getNameDir(int parent , int currentsector);
+            Directory *getCurrentDir();
+            int MakeDir(char*);
+            bool removeDir(char *name);
+	    void ListCurrentDir();
 #endif
 
   private:
+
 #ifdef CHANGED
     char *pathName;
 #endif
+
    OpenFile* freeMapFile;		// Bit map of free disk blocks,
 					// represented as a file
    OpenFile* directoryFile;		// "Root" directory -- list of 
@@ -115,4 +117,3 @@ class FileSystem {
 #endif // FILESYS
 
 #endif // FS_H
-
