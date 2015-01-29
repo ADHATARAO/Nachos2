@@ -53,11 +53,15 @@ class FileHeader {
 
     int FileLength();			// Return the length of the file 
 					// in bytes
+#ifdef CHANGED
+    bool isDirectoryHeader();
+
+#endif
 
     void Print();			// Print the contents of the file.
 
   private:
-    int numBytes;			// Number of bytes in the file
+    int numBytes;			// Number of bytes in the file or directory
     int numSectors;			// Number of data sectors in the file
     int dataSectors[NumDirect];		// Disk sector numbers for each data 
 					// block in the file

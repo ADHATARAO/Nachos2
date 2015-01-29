@@ -23,6 +23,10 @@
 #include "post.h"
 #include "interrupt.h"
 
+#ifdef CHANGED
+#include "reliablepost.h"
+#endif //CHANGED
+
 // Test out message delivery, by doing the following:
 //	1. send a message to the machine with ID "farAddr", at mail box #0
 //	2. wait for the other machine's message to arrive (in our mailbox #0)
@@ -49,6 +53,8 @@ void MailTest(int farAddr) {
 
 		// Send the first message
 		postOffice->Send(outPktHdr, outMailHdr, data);
+		printf("Sending \"%s\" to %d, box %d\n", data, outPktHdr.to,outMailHdr.from);
+		fflush(stdout);
 
 		// Wait for the first message from the other machine
 		postOffice->Receive(0, &inPktHdr, &inMailHdr, buffer);
@@ -63,6 +69,9 @@ void MailTest(int farAddr) {
 		outMailHdr.length = strlen(ack) + 1;
 
 		postOffice->Send(outPktHdr, outMailHdr, ack);
+		printf("Sending \"%s\" to %d, box %d\n", data, outPktHdr.to,outMailHdr.from);
+				fflush(stdout);
+
 
 		// Wait for the ack from the other machine to the first message we sent.
 		postOffice->Receive(1, &inPktHdr, &inMailHdr, buffer);
@@ -73,6 +82,8 @@ void MailTest(int farAddr) {
 	// Then we're done!
 	interrupt->Halt();
 }
+
+#ifdef CHANGED
 
 void RingTest(int farAddr, int ring_size)
 {
@@ -120,3 +131,35 @@ void RingTest(int farAddr, int ring_size)
 
 	interrupt->Halt();
 }
+
+
+void ReliableMailTest(int farAddr)
+{
+	PacketHeader outPktHdr, inPktHdr;
+	MailHeader outMailHdr, inMailHdr;
+
+	printf("farAddr >> %d \n", farAddr);
+
+	if(farAddr == 0)
+	{
+		const char *data = "Reliable message !";
+
+		outPktHdr.to = farAddr;
+		outMailHdr.to = 0;
+		outMailHdr.from = 1;
+		outMailHdr.length = strlen(data) + 1;
+
+		// Send the first message
+		reliablePost->Send(outPktHdr, outMailHdr, data);
+	} else{
+
+		char buffer[MaxMailSize];
+		// Wait for the first message from the other machine
+		reliablePost->Receive(0, &inPktHdr, &inMailHdr, buffer);
+		printf("Got \"%s\" from %d, box %d\n", buffer, inPktHdr.from,inMailHdr.from);
+		fflush(stdout);
+	}
+	interrupt->Halt();
+}
+
+#endif //CHANGED

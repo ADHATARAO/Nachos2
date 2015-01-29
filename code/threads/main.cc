@@ -65,6 +65,7 @@ extern void MailTest (int networkID);
 #ifdef CHANGED
 extern void SynchConsoleTest(char *in, char *out);
 extern void RingTest(int networkID, int ring_size);
+extern void ReliableMailTest(int networkID);
 #endif //CHANGED
 
 //----------------------------------------------------------------------
@@ -182,7 +183,7 @@ main (int argc, char **argv)
 	    }
 
 	#ifdef CHANGED
-	  else if (!strcmp (*argv, "-r"))
+	  else if (!strcmp (*argv, "-rt"))
 		{
 			ASSERT (argc > 2);
 			Delay (3); // delay for 2 seconds
@@ -190,6 +191,15 @@ main (int argc, char **argv)
 			// start up another nachos
 			RingTest (atoi (*(argv + 1)), atoi (*(argv + 2)));
 			argCount = 3;
+		}
+		else if (!strcmp (*argv, "-r"))
+		{
+			ASSERT (argc > 1);
+			Delay (2); // delay for 2 seconds
+			// to give the user time to
+			// start up another nachos
+			ReliableMailTest (atoi (*(argv + 1)));
+			argCount = 2;
 		}
 	#endif //CHANGED
 

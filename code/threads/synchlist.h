@@ -34,8 +34,13 @@ class SynchList
     // apply function to every item in the list
     void Mapcar (VoidFunctionPtr func);
 
+	#ifdef CHANGED
+	bool isEmpty();
+	#endif //CHANGED
+
+
   private:
-      List * list;		// the unsynchronized list
+    List * list;		// the unsynchronized list
     Lock *lock;			// enforce mutual exclusive access to the list
     Condition *listEmpty;	// wait in Remove if the list is empty
 };

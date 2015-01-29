@@ -62,4 +62,13 @@ extern FrameProvider *frameProvider;
 #endif //USER_PROGRAM
 #endif //CHANGED
 
+
+#ifdef CHANGED
+#ifdef NETWORK
+#include "reliablepost.h"
+extern ReliablePost *reliablePost;
+#endif //NETWORK
+#endif //CHANGED
+
+
 #endif // SYSTEM_H

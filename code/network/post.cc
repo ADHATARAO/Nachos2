@@ -122,7 +122,6 @@ MailBox::Put(PacketHeader pktHdr, MailHeader mailHdr, char *data)
 void 
 MailBox::Get(PacketHeader *pktHdr, MailHeader *mailHdr, char *data) 
 { 
-    DEBUG('n', "Waiting for mail in mailbox\n");
     Mail *mail = (Mail *) messages->Remove();	// remove message from list;
 						// will wait if list is empty
 
@@ -138,6 +137,15 @@ MailBox::Get(PacketHeader *pktHdr, MailHeader *mailHdr, char *data)
     delete mail;			// we've copied out the stuff we
 					// need, we can now discard the message
 }
+
+
+#ifdef CHANGED
+bool
+MailBox:: IsEmpty()
+{
+	return messages->isEmpty();
+}
+#endif //CHANGED
 
 //----------------------------------------------------------------------
 // PostalHelper, ReadAvail, WriteDone
@@ -345,3 +353,11 @@ PostOffice::PacketSent()
     messageSent->V();
 }
 
+
+#ifdef CHANGED
+int
+PostOffice::EmptyMailBox(int boxnum)
+{
+	return boxes[boxnum].IsEmpty();
+}
+#endif //CHANGED

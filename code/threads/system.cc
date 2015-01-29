@@ -44,6 +44,12 @@ FrameProvider *frameProvider;
 #endif //USER_PROGRAM
 #endif //CHANGED
 
+#ifdef CHANGED
+#ifdef NETWORK
+ReliablePost *reliablePost;
+#endif //NETWORK
+#endif //CHANGED
+
 // External definition, to allow us to take a pointer to this function
 extern void Cleanup ();
 
@@ -189,6 +195,12 @@ Initialize (int argc, char **argv)
 #endif // CHANGED
 
 
+#ifdef CHANGED
+#ifdef NETWORK
+    reliablePost = new ReliablePost();
+#endif //NETWORK
+#endif //CHANGED
+
 }
 
 //----------------------------------------------------------------------
@@ -221,6 +233,12 @@ Cleanup ()
     delete synchConsole;
     delete frameProvider;
 #endif //USER_PROGRAM
+#endif //CHANGED
+
+#ifdef CHANGED
+#ifdef NETWORK
+delete reliablePost;
+#endif //NETWORK
 #endif //CHANGED
 
     delete timer;
