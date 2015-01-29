@@ -5,7 +5,27 @@ int main()
 	ForkExec("userpages1");
 	PutChar('\n');
 	ForkExec("userpages2");
-
-	PutString("Exiting...\n");
+	PutChar('\n');
+	ForkExec("userpages1");
+	PutChar('\n');
+	ForkExec("userpages2");
+	PutChar('\n');
+	ForkExec("userpages1");
+	PutChar('\n');
+	ForkExec("userpages2");
+	PutChar('\n');
+	ForkExec("userpages1");
+	PutChar('\n');
+	ForkExec("userpages2");
+	PutChar('\n');
+	ForkExec("userpages1");
+	PutChar('\n');
+	ForkExec("userpages2");
+	PutChar('\n');
+	ForkExec("userpages1");
+	PutChar('\n');
+	ForkExec("userpages2");
+	PutChar('\n');
+	PutString("\nExiting...\n");
 Halt();
 }
