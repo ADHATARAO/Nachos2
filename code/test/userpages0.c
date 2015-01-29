@@ -6,7 +6,7 @@ void print(void * arg)
 	char *c= (char*) arg;
 	int i=0;
 	PutChar('\n');
-	for (i=0;i<100;i++)
+	for (i=0;i<10;i++)
 	{
 		PutChar(*c);
 		//currentThread->Yield();

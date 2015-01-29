@@ -147,6 +147,7 @@ AddrSpace::~AddrSpace() {
 	// delete pageTable;
 	delete[] pageTable;
 
+
 #ifdef CHANGED
 	delete bitmapThreadStack;
 #endif //CHANGED
